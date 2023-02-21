@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  first_name String
+  last_name  String
+  email      String   @unique
+  password   String
+  authToken  String?
+  profile    Profile?
+}
+
+model Profile {
+  id            Int     @id @default(autoincrement())
+  user_id       Int     @unique
+  wallet_BTC    String?
+  wallet_ETH    String?
+  wallet_LTC    String?
+  wallet_Kadena String?
+  wallet_Zcash  String?
+  empresa       String?
+  telefono      String?
+  User          User    @relation(fields: [user_id], references: [id])
+}
