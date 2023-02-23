@@ -5,7 +5,9 @@ import cors from "cors";
 import { PrismaClient } from "@prisma/client";
 
 import userRouter from "./routes/user";
-// import marketplaceRouter from "./routes/marketplace";
+import recompensaRouter from "./routes/recompensas";
+
+
 
 import bodyParser from "body-parser";
 
@@ -27,7 +29,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use("/user", userRouter);
-// app.use("/marketplace", marketplaceRouter);
+app.use("/recompensas", recompensaRouter);
 
 app.get("/", (req: Request, res: Response) => res.type("html").send(html));
 

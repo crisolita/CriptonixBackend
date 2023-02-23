@@ -14,6 +14,7 @@ model User {
   email      String   @unique
   password   String
   authToken  String?
+  rol String?
   profile    Profile?
 }
 
@@ -28,4 +29,17 @@ model Profile {
   empresa       String?
   telefono      String?
   User          User    @relation(fields: [user_id], references: [id])
+}
+model Rewards {
+  rewardID      Int    @id @default(autoincrement())
+  collectionID  Int 
+  creationDate String @unique
+  dates String[]
+  recompensas Float[]
+  hashrate Float[]
+  feePool Float?
+  feeColl Float?
+  feeEnergy Float?
+  ratioSuccess String?
+  totalRecompensa Float?
 }

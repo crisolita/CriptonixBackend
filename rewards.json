@@ -1,0 +1,62 @@
+[
+  {
+    "ID": 1,
+    "Fecha": "2022-02-07",
+    "Recompensa": "0,02765965",
+    "Hashrate": 6.049,
+    "FeePool": "3%",
+    "FeeEnergy": "3%",
+    "FeeCollection": "2,5%",
+    "RatioSuccess": "99,6%"
+  },
+  {
+    "ID": 1,
+    "Fecha": "2022-02-08",
+    "Recompensa": "0,02763309",
+    "Hashrate": 6.031,
+    "FeePool": "3%",
+    "FeeEnergy": "3%",
+    "FeeCollection": "2,5%",
+    "RatioSuccess": "99,6%"
+  },
+  {
+    "ID": 1,
+    "Fecha": "2022-02-09",
+    "Recompensa": "0,02776704",
+    "Hashrate": 6.059,
+    "FeePool": "3%",
+    "FeeEnergy": "3%",
+    "FeeCollection": "2,5%",
+    "RatioSuccess": "99,6%"
+  },
+  {
+    "ID": 1,
+    "Fecha": "2022-02-10",
+    "Recompensa": "0,02767097",
+    "Hashrate": 6.039,
+    "FeePool": "3%",
+    "FeeEnergy": "3%",
+    "FeeCollection": "2,5%",
+    "RatioSuccess": "99,6%"
+  },
+  {
+    "ID": 1,
+    "Fecha": "2022-02-11",
+    "Recompensa": "0,02767065",
+    "Hashrate": 6.031,
+    "FeePool": "3%",
+    "FeeEnergy": "3%",
+    "FeeCollection": "2,5%",
+    "RatioSuccess": "99,6%"
+  },
+  {
+    "ID": 1,
+    "Fecha": "2022-02-12",
+    "Recompensa": "0,0276341",
+    "Hashrate": 6.033,
+    "FeePool": "3%",
+    "FeeEnergy": "3%",
+    "FeeCollection": "2,5%",
+    "RatioSuccess": "99,6%"
+  }
+ ]

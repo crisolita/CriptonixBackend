@@ -13,3 +13,14 @@ export const querySchemaCreateNFT = Joi.object({
   cantidad: Joi.number().required(),
   imageIpfs:Joi.string().required()
 });
+export const querySchemaAddReward = Joi.object({
+  collectionID: Joi.number().required,
+  creationDate:Joi.string().required(),
+  Fecha:Joi.string().required(),
+  Recompensa:Joi.string().required(),
+  hashrate:Joi.number(),
+  FeePool:Joi.string(),
+  FeeCollection:Joi.string(),
+  FeeEnergy:Joi.string(),
+  ratioSuccess:Joi.string(),
+});
