@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE "Collections" ALTER COLUMN "hashrate" SET DATA TYPE DOUBLE PRECISION[];

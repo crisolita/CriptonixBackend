@@ -7,17 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id         Int      @id @default(autoincrement())
-  first_name String
-  last_name  String
-  email      String   @unique
-  password   String
-  authToken  String?
-  rol String?
-  profile    Profile?
-}
-
 model Profile {
   id            Int     @id @default(autoincrement())
   user_id       Int     @unique
@@ -30,16 +19,43 @@ model Profile {
   telefono      String?
   User          User    @relation(fields: [user_id], references: [id])
 }
+
 model Rewards {
-  rewardID      Int    @id @default(autoincrement())
-  collectionID  Int 
-  creationDate String @unique
-  dates String[]
-  recompensas Float[]
-  hashrate Float[]
-  feePool Float?
-  feeColl Float?
-  feeEnergy Float?
-  ratioSuccess String?
+  rewardID        Int      @id @default(autoincrement())
+  collectionID    Int
+  creationDate    String   @unique
+  dates           String[]
+  recompensas     Float[]
+  hashrate        Float[]
+  feePool         Float?
+  feeColl         Float?
+  feeEnergy       Float?
+  ratioSuccess    String?
   totalRecompensa Float?
+    Bills      Bills[]
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  first_name String
+  last_name  String
+  email      String   @unique
+  password   String
+  authToken  String?
+  rol        String?
+  Profile    Profile?
+  Bills      Bills[]
+}
+
+model Bills {
+  id           Int      @id @default(autoincrement())
+  user_id      Int
+  reward_id    Int
+  creationDate String
+  amountReward Float
+  amountFee    Float
+  feePaid      Boolean?
+  rewardPaid   Boolean?
+  User         User     @relation(fields: [user_id], references: [id])
+  Rewards         Rewards     @relation(fields: [reward_id], references: [rewardID])
 }

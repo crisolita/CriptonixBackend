@@ -1,4 +1,6 @@
 import { Request, Response } from "express";
+import { getUserById } from "../service/user";
+import contract from "../service/web3";
 import { normalizeResponse } from "../utils/utils";
 ///// ////////////////////////////////////////// AGREGAR RECOMPENSAS //////////////////////////////////////////////////
 export const addReward = async (req: Request, res: Response) => {
@@ -31,6 +33,9 @@ export const addReward = async (req: Request, res: Response) => {
             totalRecompensa:recompensaTotal*(1-totalFees)
         }
     })
+    const numberOfUserInCollection= await contract.functions.collections(reward[1].ID);
+
+    console.log(numberOfUserInCollection)
         res.json(
           normalizeResponse({ data: "hola"})
         );
