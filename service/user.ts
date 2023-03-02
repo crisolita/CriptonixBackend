@@ -21,6 +21,12 @@ export const getUserByEmail = async (email: string, prisma: PrismaClient) => {
     where: { email },
   });
 };
+export const getUserByWallet = async (wallet_ETH: string, prisma: PrismaClient) => {
+ return (await prisma.user.findUnique({
+    where:{ wallet_ETH:wallet_ETH }
+  }));
+};
+
 
 export const updateUser = async (
   id: string,

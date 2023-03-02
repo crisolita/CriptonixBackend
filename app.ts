@@ -6,6 +6,8 @@ import { PrismaClient } from "@prisma/client";
 
 import userRouter from "./routes/user";
 import recompensaRouter from "./routes/recompensas";
+import billsRouter from "./routes/bills";
+
 
 
 
@@ -30,6 +32,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use("/user", userRouter);
 app.use("/recompensas", recompensaRouter);
+app.use("/bills", billsRouter);
+
 
 app.get("/", (req: Request, res: Response) => res.type("html").send(html));
 

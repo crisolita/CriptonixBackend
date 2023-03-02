@@ -9,8 +9,8 @@ import {
   updateUser,
   updateUserAuthToken,
 } from "../service/user";
-import { sendEmail } from "../service/mail";
-import { createWallet, manageKeys } from "../service/web3";
+import { sendAuthEmail } from "../service/mail";
+import { createWallet, manageKeys, wallet } from "../service/web3";
 import { string } from "joi";
 
 export const convertFullName = (str: string) =>
@@ -23,7 +23,7 @@ export const userRegisterController = async (req: Request, res: Response) => {
     const salt = bcrypt.genSaltSync();
     // @ts-ignore
     const prisma = req.prisma as PrismaClient;
-    const { email, first_name, last_name, password } = req?.body;
+    const { email, first_name, last_name, password,wallet_ETH } = req?.body;
     const user = await getUserByEmail(email, prisma);
     if (!user) {
       const newUser=await prisma.user.create({
@@ -32,11 +32,12 @@ export const userRegisterController = async (req: Request, res: Response) => {
           first_name:first_name,
           last_name:last_name,
           password: bcrypt.hashSync(password, salt),
+          wallet_ETH:wallet_ETH
         },
       });
       await prisma.profile.create({
         data:{
-          user_id:newUser.id
+          user_id:newUser.id,
         }
       })
       
@@ -62,7 +63,7 @@ export const userLoginController = async (req: Request, res: Response) => {
     const user = await getUserByEmail(email, prisma);
 
     if (user && user.password && bcrypt.compareSync(password, user.password)) {
-      await sendEmail(email, authCode);
+      await sendAuthEmail(email, authCode);
       await updateUserAuthToken(user.id.toString(), authCode, prisma);
       return res.json(
         normalizeResponse({
@@ -148,7 +149,7 @@ export const recoverPasswordSendTokenController = async (
 
     if (user) {
       const salt = bcrypt.genSaltSync();
-      await sendEmail(email, authCode);
+      await sendAuthEmail(email, authCode);
       await updateUserAuthToken(
         user.id.toString(),
         bcrypt.hashSync(authCode, salt),

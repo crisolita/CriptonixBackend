@@ -10,11 +10,10 @@ datasource db {
 model Profile {
   id            Int     @id @default(autoincrement())
   user_id       Int     @unique
-  wallet_BTC    String?
-  wallet_ETH    String?
-  wallet_LTC    String?
-  wallet_Kadena String?
-  wallet_Zcash  String?
+  wallet_BTC    String? @unique
+  wallet_LTC    String? @unique
+  wallet_Kadena String? @unique
+  wallet_Zcash  String? @unique
   empresa       String?
   telefono      String?
   User          User    @relation(fields: [user_id], references: [id])
@@ -44,6 +43,7 @@ model User {
   authToken  String?
   rol        String?
   Profile    Profile?
+  wallet_ETH    String? @unique
   Bills      Bills[]
 }
 
@@ -53,7 +53,6 @@ model Bills {
   reward_id    Int
   creationDate String
   amountReward Float
-  amountFee    Float
   feePaid      Boolean?
   rewardPaid   Boolean?
   User         User     @relation(fields: [user_id], references: [id])
