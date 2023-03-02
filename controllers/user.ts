@@ -47,7 +47,7 @@ export const userRegisterController = async (req: Request, res: Response) => {
     } else {
       throw new Error("Email ya registrado");
     }
-  } catch ({ error }) {
+  } catch ( error ) {
     res.json(normalizeResponse({ error }));
   }
 };
