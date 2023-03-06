@@ -7,6 +7,7 @@ import { PrismaClient } from "@prisma/client";
 import userRouter from "./routes/user";
 import recompensaRouter from "./routes/recompensas";
 import billsRouter from "./routes/bills";
+import mailRouter from "./routes/mail";
 
 
 
@@ -17,7 +18,7 @@ dotenv.config();
 
 const prisma = new PrismaClient();
 const app: Express = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 
 app.use(cors());
 // app.use(morgan("tiny"));
@@ -33,6 +34,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use("/user", userRouter);
 app.use("/recompensas", recompensaRouter);
 app.use("/bills", billsRouter);
+app.use("/mail", mailRouter);
+
 
 
 app.get("/", (req: Request, res: Response) => res.type("html").send(html));

@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { normalizeResponse } from "../utils/utils";
 
 
 /////////// obtener todas las bills  /////
@@ -8,13 +7,13 @@ import { normalizeResponse } from "../utils/utils";
       // @ts-ignore
       const prisma = req.prisma as PrismaClient;
       const result= await prisma.bills.findMany();
-      res.json(
-        normalizeResponse({ data: result})
+      res.status(200).json(
+      { data: result}
       );
     }
   catch (error) {
     console.log(error)
-    res.json(normalizeResponse({ error }));
+    res.status(500).json({ error:error });
   }}
   export const getBillsByUser = async (req: Request, res: Response) => {
     try {
@@ -24,13 +23,13 @@ import { normalizeResponse } from "../utils/utils";
       const result= await prisma.bills.findMany({
         where:{user_id:Number(user_id)}
       });
-      res.json(
-        normalizeResponse({ data: result})
+      res.status(200).json(
+    { data: result}
       );
     }
   catch (error) {
     console.log(error)
-    res.json(normalizeResponse({ error }));
+    res.status(500).json({error: error });
   }}
   export const getFeeNotPaidByUser = async (req: Request, res: Response) => {
     try {
@@ -40,13 +39,13 @@ import { normalizeResponse } from "../utils/utils";
       const result= await prisma.bills.findMany({
         where:{user_id:Number(user_id),feePaid:false}
       });
-      res.json(
-        normalizeResponse({ data: result})
+      res.status(200).json(
+        { data: result}
       );
     }
   catch (error) {
     console.log(error)
-    res.json(normalizeResponse({ error }));
+    res.status(500).json({ error:error });
   }}
   export const getFeePaidByUser = async (req: Request, res: Response) => {
     try {
@@ -56,13 +55,13 @@ import { normalizeResponse } from "../utils/utils";
       const result= await prisma.bills.findMany({
         where:{user_id:Number(user_id),feePaid:true}
       });
-      res.json(
-        normalizeResponse({ data: result})
+      res.status(200).json(
+    { data: result}
       );
     }
   catch (error) {
     console.log(error)
-    res.json(normalizeResponse({ error }));
+    res.status(500).json({ error:error });
   }}
   export const getRewardsNotPaidByUser = async (req: Request, res: Response) => {
     try {
@@ -72,13 +71,13 @@ import { normalizeResponse } from "../utils/utils";
       const result= await prisma.bills.findMany({
         where:{user_id:Number(user_id),rewardPaid:false}
       });
-      res.json(
-        normalizeResponse({ data: result})
+      res.status(200).json(
+      { data: result}
       );
     }
   catch (error) {
     console.log(error)
-    res.json(normalizeResponse({ error }));
+    res.status(500).json({ error:error });
   }}
   export const getRewardsPaidByUser = async (req: Request, res: Response) => {
     try {
@@ -88,11 +87,11 @@ import { normalizeResponse } from "../utils/utils";
       const result= await prisma.bills.findMany({
         where:{user_id:Number(user_id),rewardPaid:true}
       });
-      res.json(
-        normalizeResponse({ data: result})
+      res.status(200).json(
+        { data: result}
       );
     }
   catch (error) {
     console.log(error)
-    res.json(normalizeResponse({ error }));
+    res.status(500).json({ error:error });
   }}

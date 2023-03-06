@@ -18,7 +18,20 @@ export const transporter = nodemailer.createTransport({
     rejectUnauthorized: false,
   }
 });
-
+export async function sendInfoEmail(email: string, info: string) {
+  try {
+    console.log("estoy aqui o que")
+  const mailData = {
+    from: process.env.EMAILADDRESS, // sender address
+    to: email, // list of receivers
+    subject: "INFORMACION DE INTERES",
+    html: `<h2 style="color:#23262F;">INFORMACIÓN.</h2><h3 style="color:#6E7786;">${info}</h3>`,
+  };
+  return   transporter.sendMail(mailData); 
+} catch (e) {
+  console.log(e)
+}
+}
 export async function sendAuthEmail(email: string, authCode: string) {
   try {
   const mailData = {

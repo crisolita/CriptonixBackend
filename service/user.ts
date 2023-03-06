@@ -53,3 +53,12 @@ export const updateUserAuthToken = async (
     },
   });
 };
+export const getWalletBTCByUser = async (
+  id: string,
+  prisma: PrismaClient
+) => {
+  return (await prisma.profile.findUnique({
+    where: { id: Number(id) },
+  }))?.wallet_BTC;
+};
+

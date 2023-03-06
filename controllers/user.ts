@@ -1,7 +1,7 @@
 import { PrismaClient, User } from "@prisma/client";
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
-import { createJWT, normalizeResponse } from "../utils/utils";
+import { createJWT } from "../utils/utils";
 import {
   getAllUsers,
   getUserByEmail,
@@ -10,8 +10,6 @@ import {
   updateUserAuthToken,
 } from "../service/user";
 import { sendAuthEmail } from "../service/mail";
-import { createWallet, manageKeys, wallet } from "../service/web3";
-import { string } from "joi";
 
 export const convertFullName = (str: string) =>
   str.split(", ").reverse().join(" ");
@@ -41,14 +39,15 @@ export const userRegisterController = async (req: Request, res: Response) => {
         }
       })
       
-      res.json(
-        normalizeResponse({ data: { email: email, first_name: first_name,last_name:last_name } })
+      res.status(200).json(
+        { data: { email: email, first_name: first_name,last_name:last_name } }
       );
     } else {
-      throw new Error("Email ya registrado");
+      res.status(400).json({error:"Email ya registrado"})
     }
   } catch ( error ) {
-    res.json(normalizeResponse({ error }));
+    console.log(error)
+    res.status(500).json({error:error})
   }
 };
 
@@ -65,30 +64,19 @@ export const userLoginController = async (req: Request, res: Response) => {
     if (user && user.password && bcrypt.compareSync(password, user.password)) {
       await sendAuthEmail(email, authCode);
       await updateUserAuthToken(user.id.toString(), authCode, prisma);
-      return res.json(
-        normalizeResponse({
+      return res.status(200).json(
+       {
           data: `Se ha enviado código de validación al correo: ${email}`,
-        })
+        }
       );
     } else {
-      throw new Error("Email o contraseña incorrectos");
+      res.status(400).json({error:"Email o contraaseña incorrectos"})
     }
   } catch ( error ) {
-    console.log(error)
-    res.json(normalizeResponse({ error }));
+    res.status(500).json({error:error})
   }
 };
-export const userEditProfile = async (req: Request, res: Response) => {
-  try {
-    // @ts-ignore
-    const prisma = req.prisma as PrismaClient;
-    const {telefono, empresa,wallet_BTC,wallet_ETH,wallet_LTC,wallet_Zcash,wallet_Kadena} = req?.body;
-  //Validar KYB antes de setear empresa
-  
-  } catch (error ) {
-    res.json(normalizeResponse({ error }));
-  }
-};
+
 export const userTokenValidate = async (req: Request, res: Response) => {
   try {
     // @ts-ignore
@@ -97,16 +85,17 @@ export const userTokenValidate = async (req: Request, res: Response) => {
     const user = await getUserByEmail(email, prisma);
     if (user) {
       if (authCode == user.authToken)
-        return res.json(
-          normalizeResponse({ data: user, token: createJWT(user) })
+        return res.status(200).json(
+       { data: {user:user.email, token: createJWT(user)} }
         );
       else
-        return res.json(normalizeResponse({ data: "Token 2fa incorrecto." }));
+        return res.status(403).json({ error: "Token 2fa incorrecto." });
     } else {
-      throw new Error("Email incorrecto");
+      return res.status(400).json({ error: "Email incorrecto" });
     }
-  } catch ({  error }) {
-    res.json(normalizeResponse({ error }));
+  } catch ( error ) {
+    return res.status(500).json({ error: error });
+
   }
 };
 export const changePasswordController = async (req: Request, res: Response) => {
@@ -124,14 +113,14 @@ export const changePasswordController = async (req: Request, res: Response) => {
           { password: bcrypt.hashSync(newPassword, salt) },
           prisma
         );
-        return res.json(normalizeResponse({ data: user }));
+        return res.status(200).json({ data: {email:user.email} });
       } else
-        return res.json(normalizeResponse({ data: "Token 2fa incorrecto." }));
+        return res.status(400).json({ error: "Token 2fa incorrecto." });
     } else {
-      throw new Error("Usuario no existe");
+      return res.status(404).json({ error: "Usuario no existe." });
     }
-  } catch ({  error }) {
-    res.json(normalizeResponse({ error }));
+  } catch ( error ) {
+    return res.status(500).json({ error: error });
   }
 };
 export const recoverPasswordSendTokenController = async (
@@ -155,15 +144,15 @@ export const recoverPasswordSendTokenController = async (
         bcrypt.hashSync(authCode, salt),
         prisma
       );
-      return res.json(
-        normalizeResponse({
+      return res.status(200).json(
+       {
           data: `Se ha enviado código de validación al correo: ${email}`,
-        })
+        }
       );
     } else {
-      throw new Error("No existe el usuario");
+      return res.status(404).json({ error: "Usuario no existe." });
     }
   } catch ({ error }) {
-    res.json(normalizeResponse({ error }));
+    return res.status(500).json({ error: error });
   }
 };
