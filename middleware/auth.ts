@@ -11,7 +11,6 @@ export function authenticateToken(
   const token = authHeader && authHeader.split(" ")[1];
 
   if (token == null) return res.sendStatus(401);
-
   jwt.verify(token, JWT_PRIVATE_KEY as string, (err: any, user: any) => {
     console.log(err);
 

@@ -14,6 +14,12 @@ export const querySchemaCreateNFT = Joi.object({
   cantidad: Joi.number().required(),
   imageIpfs:Joi.string().required()
 });
+export const querySchemaUGetAuth = Joi.object({
+  password: Joi.string().required().pattern(new RegExp("^[a-zA-Z0-9]{3,30}$")),
+  email: Joi.string()
+    .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
+    .required(),
+});
 export const querySchemaAddReward = Joi.object({
   collectionID: Joi.number().required,
   creationDate:Joi.string().required(),

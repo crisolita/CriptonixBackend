@@ -8,6 +8,8 @@ import {
   getUserById,
   updateUser,
   updateUserAuthToken,
+  updateUserProfile,
+  updateUserWalletETHAddress,
 } from "../service/user";
 import { sendAuthEmail } from "../service/mail";
 
@@ -54,37 +56,15 @@ export const userRegisterController = async (req: Request, res: Response) => {
 let authCode = JSON.stringify(
   Math.round(Math.random() * (999999 - 100000) + 100000)
 );
+
 export const userLoginController = async (req: Request, res: Response) => {
-  try {
-    // @ts-ignore
-    const prisma = req.prisma as PrismaClient;
-    const { email, password } = req?.body;
-    const user = await getUserByEmail(email, prisma);
-
-    if (user && user.password && bcrypt.compareSync(password, user.password)) {
-      await sendAuthEmail(email, authCode);
-      await updateUserAuthToken(user.id.toString(), authCode, prisma);
-      return res.status(200).json(
-       {
-          data: `Se ha enviado código de validación al correo: ${email}`,
-        }
-      );
-    } else {
-      res.status(400).json({error:"Email o contraaseña incorrectos"})
-    }
-  } catch ( error ) {
-    res.status(500).json({error:error})
-  }
-};
-
-export const userTokenValidate = async (req: Request, res: Response) => {
   try {
     // @ts-ignore
     const prisma = req.prisma as PrismaClient;
     const { email, authCode } = req?.body;
     const user = await getUserByEmail(email, prisma);
     if (user) {
-      if (authCode == user.authToken)
+      if (bcrypt.compareSync(authCode,user.authToken? user.authToken :""))
         return res.status(200).json(
        { data: {user:user.email, token: createJWT(user)} }
         );
@@ -98,17 +78,60 @@ export const userTokenValidate = async (req: Request, res: Response) => {
 
   }
 };
-export const changePasswordController = async (req: Request, res: Response) => {
+export const getAuthCode = async (req: Request, res: Response) => {
   try {
+    const salt = bcrypt.genSaltSync();
     // @ts-ignore
     const prisma = req.prisma as PrismaClient;
-    const { email, newPassword, authCode } = req?.body;
+    const { email,password} = req?.body;
     const user = await getUserByEmail(email, prisma);
+    if (user && user.password && bcrypt.compareSync(password, user.password)) {
+      await sendAuthEmail(email, authCode);
+      await updateUserAuthToken(user.id.toString(), bcrypt.hashSync(authCode, salt),prisma);
+      return res.status(200).json(
+       {
+          data: `Se ha enviado código de validación al correo: ${email}`,
+        }
+      );
+    } else {
+      res.status(400).json({error:"Email o contraaseña incorrectos"})
+    }
+  } catch(error) {
+    return res.status(500).json({ error: error });
+  } 
+}
+export const userEditProfile = async (req: Request, res: Response) => {
+  try {
+        // @ts-ignore
+        const user = req.user as User;
+    // @ts-ignore
+    const prisma = req.prisma as PrismaClient;
+    const { wallet_BTC,
+      wallet_LTC,
+      wallet_Kadena,
+      wallet_Zcash,
+      empresa,
+      telefono} = req?.body;
+      await updateUserProfile(`${user.id}`,req.body,prisma)
+      return res.status(200).json({data:req.body});
 
-    if (user) {
-      if (bcrypt.compareSync(authCode, user.authToken ? user.authToken : "")) {
+  } catch(error) {
+    console.log(error)
+    return res.status(500).json({ error: error });
+  } 
+}
+export const changePasswordController = async (req: Request, res: Response) => {
+  try {
+      // @ts-ignore
+      const user = req.user as User;
+    // @ts-ignore
+    const prisma = req.prisma as PrismaClient;
+    const { newPassword, authCode } = req?.body;
+    const authToken= (await getUserById(user.id.toString(),prisma))?.authToken
+    if (user && authToken) {
+      if (bcrypt.compareSync(authCode,authToken)) {
         const salt = bcrypt.genSaltSync();
-        updateUser(
+        await updateUser(
           user.id.toString(),
           { password: bcrypt.hashSync(newPassword, salt) },
           prisma
@@ -123,36 +146,20 @@ export const changePasswordController = async (req: Request, res: Response) => {
     return res.status(500).json({ error: error });
   }
 };
-export const recoverPasswordSendTokenController = async (
-  req: Request,
-  res: Response
-) => {
+export const userWalletController = async (req: Request, res: Response) => {
   try {
-    let authCode = JSON.stringify(
-      Math.round(Math.random() * (999999 - 100000) + 100000)
-    );
+    // @ts-ignore
+    const user = req.user as User;
     // @ts-ignore
     const prisma = req.prisma as PrismaClient;
-    const { email } = req?.body;
-    const user = await getUserByEmail(email, prisma);
-
-    if (user) {
-      const salt = bcrypt.genSaltSync();
-      await sendAuthEmail(email, authCode);
-      await updateUserAuthToken(
-        user.id.toString(),
-        bcrypt.hashSync(authCode, salt),
-        prisma
-      );
-      return res.status(200).json(
-       {
-          data: `Se ha enviado código de validación al correo: ${email}`,
-        }
-      );
-    } else {
-      return res.status(404).json({ error: "Usuario no existe." });
-    }
-  } catch ({ error }) {
-    return res.status(500).json({ error: error });
+    const { wallet } = req?.body;
+    const updatedUser = await updateUserWalletETHAddress(
+      `${user.id}`,
+      wallet,
+      prisma
+    );
+    res.status(200).json({ data: {email:updatedUser.email,newWallet:updatedUser.wallet_ETH}});
+  } catch (error ) {
+    res.status(500).json(error);
   }
 };

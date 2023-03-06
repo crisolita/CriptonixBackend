@@ -2,12 +2,14 @@ import express from "express";
 import {
   userRegisterController,
   userLoginController,
-  userTokenValidate,
-  recoverPasswordSendTokenController,
   changePasswordController,
+  userWalletController,
+  userEditProfile,
+  getAuthCode,
 } from "../controllers/user";
 import Joivalidator from "express-joi-validation";
-import { querySchemaRegistro } from "../middleware/validation";
+import { querySchemaRegistro, querySchemaUGetAuth } from "../middleware/validation";
+import { authenticateToken } from "../middleware/auth";
 const validator = Joivalidator.createValidator();
 
 const router = express.Router();
@@ -19,14 +21,11 @@ router.post(
   validator.body(querySchemaRegistro),
   userRegisterController
 );
-
-router.post("/recover-password-sendToken", recoverPasswordSendTokenController);
-
-router.post("/recover-password-changePassword", changePasswordController);
-
+router.post("/changePassword",authenticateToken, changePasswordController);
 router.post("/login", userLoginController);
-
-router.post("/validate", userTokenValidate);
+router.post("/updateWallet", authenticateToken,userWalletController);
+router.post("/updateUser", authenticateToken,userEditProfile);
+router.post("/getAuth",validator.body(querySchemaUGetAuth),getAuthCode)
 
 // router.post("/buyNFT", authenticateToken, userWalletController);
 

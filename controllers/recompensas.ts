@@ -5,6 +5,7 @@ import { getBillByUser, getUserByCollection, paidFeeWithUSDT, payBTC } from "../
 import { sendBillEmail } from "../service/mail";
 import { getUserById, getWalletBTCByUser } from "../service/user";
 import contract from "../service/web3";
+import { priceFeed } from "../utils/const";
 ///// ////////////////////////////////////////// AGREGAR RECOMPENSAS //////////////////////////////////////////////////
 export const addReward = async (req: Request, res: Response) => {
     try {
@@ -116,42 +117,60 @@ export const addReward = async (req: Request, res: Response) => {
      export const claimReward = async (req: Request, res: Response) => {
       try {
           // @ts-ignore
+    const user = req.user as User;
+          // @ts-ignore
       const prisma = req.prisma as PrismaClient;
-      const {rewardID, user_id,payMethod} = req?.body;
-      const bill = await getBillByUser(Number(rewardID),Number(user_id),prisma)
-      if(!bill) return res.sendStatus(404)
-      if(bill.rewardPaid) return res.sendStatus(403).json("This reward is already paid")
+      const {rewardID,payMethod} = req?.body;
+      const bill = await getBillByUser(Number(rewardID),Number(user.id),prisma)
+      if(!bill) return res.status(404).json({error:"No bill found!!"})
+      if(bill.rewardPaid) return res.status(403).json({error:"This reward is already paid"})
+      const wallet_BTC= await getWalletBTCByUser(user.id,prisma);
+      if(!wallet_BTC) return res.status(404).json({error:"Not wallet BTC found!!"})
       if(payMethod==="USDT") {
-        console.log("aqui")
-        const bool=await paidFeeWithUSDT(Number(rewardID),Number(user_id),prisma)
-        if(!bool) return res.sendStatus(403).json({error:"The payment with USDT failed"});
-        const wallet_BTC= await getWalletBTCByUser(user_id,prisma);
-        if(!wallet_BTC) return res.sendStatus(404).json("Not wallet BTC found!!")
-        console.log(wallet_BTC)
-        await payBTC(wallet_BTC,bill.amountReward.toString())
-        // await prisma.bills.update({
+        const bool=await paidFeeWithUSDT(Number(rewardID),Number(user.id),prisma)
+        if(!bool) return res.status(403).json({error:"The payment with USDT failed"});
+        const payment= await payBTC(wallet_BTC,bill.amountReward)
+      } else if (payMethod==="STRIPE") {
+        ////////FUNCION PARA CORROBAR PAGO DE STRIPE
+        ///pagar con BTC as well
+        ///Escribir en la base de datos que ya ha sido pagado
+      } else  if (payMethod==="BTC") {
+          ///Buscar cuantos dias tiene la recompensa
+          const theReward= await prisma.rewards.findUnique({
+            where:{rewardID:Number(rewardID)}
+          })
+          const dayCost= await contract.collections(theReward.collectionID)
+          const btc_price= await priceFeed.latestRoundData()
+          const feeBTC=Number(ethers.utils.formatEther(dayCost.energyCost.toString()))/Number(btc_price.answer.div(100000))*theReward.dates.length
+          ///restarle el btc 
+          const newAmount= bill.amountReward-feeBTC;
+          ///pagar
+          await payBTC(wallet_BTC,newAmount)
+         /// cambiar la bd 
+            // await prisma.bills.update({
         //   where: { id: Number(bill.id) },
         //   data: {
         //     feePaid:true,
         //     rewardPaid:true
         //   },
         // })
-      } else if (payMethod==="STRIPE") {
-        ////////FUNCION PARA CORROBAR PAGO DE STRIPE
-        ///pagar con BTC as well
-        ///Escribir en la base de datos que ya ha sido pagado
+        res.status(200).json({data:{amount:newAmount,wallet:wallet_BTC}})
       } else {
-          ///Buscar cuantos dias tiene la recompensa
-          ///restarle el btc 
-          ///pagar
-          /// cambiar la bd 
-
-        const theReward= await prisma.rewards.findUnique({
-          where:{rewardID:rewardID}
-        })
-        console.log(theReward)
+        res.status(404).json({error:"Not payment method available"})
       }
-      res.status(200).json({data:bill.amountReward})
+         /// cambiar la bd 
+            // await prisma.bills.update({
+        //   where: { id: Number(bill.id) },
+        //   data: {
+        //     feePaid:true,
+        //     rewardPaid:true
+        //   },
+        // })
+        res.status(200).json({data:{amount:bill.amountReward,wallet:wallet_BTC}})
       } 
-      catch(e){}
+      catch(e){
+        console.log(e)
+        res.status(500).json({error:e})
+
+      }
     }

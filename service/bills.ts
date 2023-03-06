@@ -58,7 +58,7 @@ export const getBillByUser=  async (rewardID:number,user_id:number,prisma: Prism
 //  export const paidFeeWithStripe=  async (rewardID:number,user_id:number,prisma: PrismaClient) => {
 //   return 
 //  };
-export const payBTC = async(address:string,montoBTC:string) => {
+export const payBTC = async(address:string,montoBTC:number) => {
     try {
       let data;
       data = await client.get_balance();
@@ -69,7 +69,7 @@ export const payBTC = async(address:string,montoBTC:string) => {
       let prepared_transaction = await client.prepare_transaction({
         from_labels: "una",
         to_addresses: address,
-        amount: montoBTC,
+        amount: montoBTC.toFixed(8).toString(),
       });
     
       // summarize the transaction we are going to prepare
@@ -82,7 +82,7 @@ export const payBTC = async(address:string,montoBTC:string) => {
     
       // after review, if you wish to approve the transaction: create and sign it
       let signed_transaction = await client.create_and_sign_transaction({
-        data: prepared_transaction,
+        data: prepared_transaction,pin:PIN
       });
       console.log(JSON.stringify(signed_transaction, null, 2));
     

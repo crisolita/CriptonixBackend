@@ -61,4 +61,23 @@ export const getWalletBTCByUser = async (
     where: { id: Number(id) },
   }))?.wallet_BTC;
 };
-
+export const updateUserWalletETHAddress = async (id:string,wallet_ETH:string,prisma:PrismaClient)=> {
+  return await prisma.user.update(
+    {
+      where: {id:Number(id)}, 
+      data: {
+        wallet_ETH
+      }
+    }
+  )
+}
+export const updateUserProfile = async (id:string,data:{},prisma:PrismaClient)=> {
+  return await prisma.profile.update(
+    {
+      where: {user_id:Number(id)}, 
+      data: {
+        ...data
+      }
+    }
+  )
+}
