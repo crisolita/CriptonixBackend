@@ -61,9 +61,9 @@ export const userLoginController = async (req: Request, res: Response) => {
   try {
     // @ts-ignore
     const prisma = req.prisma as PrismaClient;
-    const { email, authCode } = req?.body;
+    const { email, authCode,password } = req?.body;
     const user = await getUserByEmail(email, prisma);
-    if (user) {
+    if (user && user.password && bcrypt.compareSync(password, user.password)) {
       if (bcrypt.compareSync(authCode,user.authToken? user.authToken :""))
         return res.status(200).json(
        { data: {user:user.email, token: createJWT(user)} }
@@ -83,9 +83,9 @@ export const getAuthCode = async (req: Request, res: Response) => {
     const salt = bcrypt.genSaltSync();
     // @ts-ignore
     const prisma = req.prisma as PrismaClient;
-    const { email,password} = req?.body;
+    const { email} = req?.body;
     const user = await getUserByEmail(email, prisma);
-    if (user && user.password && bcrypt.compareSync(password, user.password)) {
+    if (user) {
       await sendAuthEmail(email, authCode);
       await updateUserAuthToken(user.id.toString(), bcrypt.hashSync(authCode, salt),prisma);
       return res.status(200).json(
@@ -122,14 +122,12 @@ export const userEditProfile = async (req: Request, res: Response) => {
 }
 export const changePasswordController = async (req: Request, res: Response) => {
   try {
-      // @ts-ignore
-      const user = req.user as User;
     // @ts-ignore
     const prisma = req.prisma as PrismaClient;
-    const { newPassword, authCode } = req?.body;
-    const authToken= (await getUserById(user.id.toString(),prisma))?.authToken
-    if (user && authToken) {
-      if (bcrypt.compareSync(authCode,authToken)) {
+    const { newPassword, authCode, email} = req?.body;
+    const user= await getUserByEmail(email,prisma)
+    if (user) {
+      if (bcrypt.compareSync(authCode,user.authToken? user.authToken : "")) {
         const salt = bcrypt.genSaltSync();
         await updateUser(
           user.id.toString(),
