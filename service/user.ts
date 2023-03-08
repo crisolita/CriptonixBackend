@@ -58,7 +58,7 @@ export const getWalletBTCByUser = async (
   prisma: PrismaClient
 ) => {
   return (await prisma.profile.findUnique({
-    where: { id: Number(id) },
+    where: { user_id: Number(id) },
   }))?.wallet_BTC;
 };
 export const updateUserWalletETHAddress = async (id:string,wallet_ETH:string,prisma:PrismaClient)=> {

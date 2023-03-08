@@ -5,6 +5,7 @@ import {  getUserByEmail, getUserByWallet } from "./user";
 import contract from "./web3";
 //@ts-ignore
 import BlockIo from "block_io";
+import { Response } from "express";
 const PIN = process.env.PIN;
 const client = new BlockIo({ api_key: process.env.API_KEY, pin: PIN });
 
@@ -46,12 +47,15 @@ export const getBillByUser=  async (rewardID:number,user_id:number,prisma: Prism
   const wallet= (await prisma.user.findUnique({
     where:{id:user_id}
   }))?.wallet_ETH
-  ////ACA FALTA VALIDAR LA CANTIDAD DE DIAS PAGADOS!!!!
+  const dayToPaid= (await prisma.rewards.findUnique({
+    where: {rewardID:rewardID}
+  }))?.dates.length
+  const daysPaidByReward= await contract.getDaysPerReward(wallet,rewardID)
   const rewards= await contract.rewardsPaid(wallet);
   const rewards2= rewards.map((x:string)=>{
     return x.toString()
   })
-  return rewards2.indexOf(rewardID.toString())!==-1 ? true : false
+  return rewards2.indexOf(rewardID.toString())!==-1 && (dayToPaid?dayToPaid:0>=Number(ethers.utils.formatEther(daysPaidByReward))) ? true : false
  };
 
  //// funcion para corroborar pago de fee con tarjeta ////
@@ -67,7 +71,7 @@ export const payBTC = async(address:string,montoBTC:number) => {
       // Withdraw to our new address
       // get the data to create the transaction
       let prepared_transaction = await client.prepare_transaction({
-        from_labels: "una",
+        from_labels: "coleccion1",
         to_addresses: address,
         amount: montoBTC.toFixed(8).toString(),
       });
@@ -93,7 +97,9 @@ export const payBTC = async(address:string,montoBTC:number) => {
         transaction_data: signed_transaction,
       });
       console.log(JSON.stringify(data, null, 2));
+      return true
     } catch (e) {
+      return false
       console.log(e)
     }
 }

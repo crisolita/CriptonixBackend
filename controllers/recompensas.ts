@@ -12,32 +12,34 @@ export const addReward = async (req: Request, res: Response) => {
 
       // @ts-ignore
       const prisma = req.prisma as PrismaClient;
-      const {reward,creationDate} = req?.body;
+      const {reward} = req?.body;
+      const creationDate= (new Date()).toLocaleDateString()
+      console.log(creationDate,"date")
     let recompensaTotal:number, recompensas:number[]
-    recompensas=reward.map((x:any)=>Number(x.Recompensa.replace(",",".")))
+    recompensas=reward.map((x:any)=>Number(x.RECOMPENSA.replace(",",".")))
     recompensaTotal=recompensas.reduce(function(sum:number,r:number) {
         return r+sum;
     }, 0);
     let feePool,feeColl,feeEnergy,totalFees
-    feePool=Number(reward[0].FeePool.replace("%","").replace(",",".")),
-    feeColl=Number(reward[0].FeeCollection.replace("%","").replace(",",".")),
-    feeEnergy=Number(reward[0].FeeEnergy.replace("%","").replace(",",".")),
+    feePool=Number(reward[0].FEEPOOL.replace("%","").replace(",",".")),
+    feeColl=Number(reward[0].FEECOLECCION.replace("%","").replace(",",".")),
+    feeEnergy=Number(reward[0].FEEENERGIA.replace("%","").replace(",",".")),
     totalFees=(feeColl+feeEnergy+feePool)/100
     const newReward=  await prisma.rewards.create({
           data: {
-                collectionID:reward[0].ID,
+                collectionID:reward[0].IDCOLECCION,
                 creationDate:creationDate,
-                dates:reward.map((x:any)=>x.Fecha),
+                dates:reward.map((x:any)=>x.FECHA),
                 recompensas:recompensas,
-                hashrate:reward.map((x:any)=>Number(x.Hashrate)),
+                hashrate:reward.map((x:any)=>Number(x.HASHRATE)),
                 feePool:feePool,
                 feeColl:feeColl,
                 feeEnergy:feeEnergy,
-                ratioSuccess:reward[0].RatioSuccess,
+                ratioSuccess:reward[0].RATIOEXITO,
                 totalRecompensa:recompensaTotal*(1-totalFees)
             }
         })
-        const list=await getUserByCollection(reward[0].ID,prisma)
+        const list=await getUserByCollection(reward[0].IDCOLECCION,prisma)
         const numberOfNft= await contract.getNFTByColleccion(newReward.collectionID);
         for(let x of list) {
           const bill=await prisma.bills.create({
@@ -121,6 +123,7 @@ export const addReward = async (req: Request, res: Response) => {
           // @ts-ignore
       const prisma = req.prisma as PrismaClient;
       const {rewardID,payMethod} = req?.body;
+      console.log(user)
       const bill = await getBillByUser(Number(rewardID),Number(user.id),prisma)
       if(!bill) return res.status(404).json({error:"No bill found!!"})
       if(bill.rewardPaid) return res.status(403).json({error:"This reward is already paid"})
@@ -129,7 +132,17 @@ export const addReward = async (req: Request, res: Response) => {
       if(payMethod==="USDT") {
         const bool=await paidFeeWithUSDT(Number(rewardID),Number(user.id),prisma)
         if(!bool) return res.status(403).json({error:"The payment with USDT failed"});
-        const payment= await payBTC(wallet_BTC,bill.amountReward)
+        const payment= await payBTC(wallet_BTC,bill.amountReward )
+        if(!payment) return res.status(500).json({error: "The btc payment failed"})
+        await prisma.bills.update({
+          where: { id: Number(bill.id) },
+          data: {
+            feePaid:true,
+            rewardPaid:true
+          },
+        })
+        res.status(200).json({data:{amount:bill.amountReward,wallet:wallet_BTC}})
+
       } else if (payMethod==="STRIPE") {
         ////////FUNCION PARA CORROBAR PAGO DE STRIPE
         ///pagar con BTC as well
@@ -145,28 +158,21 @@ export const addReward = async (req: Request, res: Response) => {
           ///restarle el btc 
           const newAmount= bill.amountReward-feeBTC;
           ///pagar
-          await payBTC(wallet_BTC,newAmount)
-         /// cambiar la bd 
-            // await prisma.bills.update({
-        //   where: { id: Number(bill.id) },
-        //   data: {
-        //     feePaid:true,
-        //     rewardPaid:true
-        //   },
-        // })
+          const payBtc=await payBTC(wallet_BTC,newAmount)
+          if(!payBtc) return res.status(500).json({error: "The btc payment failed"})
+        //  / cambiar la bd 
+            await prisma.bills.update({
+          where: { id: Number(bill.id) },
+          data: {
+            feePaid:true,
+            rewardPaid:true
+          },
+        })
         res.status(200).json({data:{amount:newAmount,wallet:wallet_BTC}})
       } else {
         res.status(404).json({error:"Not payment method available"})
       }
-         /// cambiar la bd 
-            // await prisma.bills.update({
-        //   where: { id: Number(bill.id) },
-        //   data: {
-        //     feePaid:true,
-        //     rewardPaid:true
-        //   },
-        // })
-        res.status(200).json({data:{amount:bill.amountReward,wallet:wallet_BTC}})
+   
       } 
       catch(e){
         console.log(e)

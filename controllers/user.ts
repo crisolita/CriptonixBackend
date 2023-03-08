@@ -32,7 +32,8 @@ export const userRegisterController = async (req: Request, res: Response) => {
           first_name:first_name,
           last_name:last_name,
           password: bcrypt.hashSync(password, salt),
-          wallet_ETH:wallet_ETH
+          wallet_ETH:wallet_ETH,
+          rol:"USUARIO"
         },
       });
       await prisma.profile.create({
@@ -61,12 +62,12 @@ export const userLoginController = async (req: Request, res: Response) => {
   try {
     // @ts-ignore
     const prisma = req.prisma as PrismaClient;
-    const { email, authCode,password } = req?.body;
+    const { email, authCode } = req?.body;
     const user = await getUserByEmail(email, prisma);
-    if (user && user.password && bcrypt.compareSync(password, user.password)) {
+    if (user ) {
       if (bcrypt.compareSync(authCode,user.authToken? user.authToken :""))
         return res.status(200).json(
-       { data: {user:user.email, token: createJWT(user)} }
+       { data: {email:user.email,first_name:user.first_name,last_name:user.last_name,rol:user.rol,wallet_ETH:user.wallet_ETH,  token: createJWT(user)} }
         );
       else
         return res.status(403).json({ error: "Token 2fa incorrecto." });
@@ -78,7 +79,7 @@ export const userLoginController = async (req: Request, res: Response) => {
 
   }
 };
-export const getAuthCode = async (req: Request, res: Response) => {
+export const getRecoveryCode =async (req: Request, res: Response) => {
   try {
     const salt = bcrypt.genSaltSync();
     // @ts-ignore
@@ -86,6 +87,28 @@ export const getAuthCode = async (req: Request, res: Response) => {
     const { email} = req?.body;
     const user = await getUserByEmail(email, prisma);
     if (user) {
+      await sendAuthEmail(email, authCode);
+      await updateUserAuthToken(user.id.toString(), bcrypt.hashSync(authCode, salt),prisma);
+      return res.status(200).json(
+       {
+          data: `Se ha enviado código de validación al correo: ${email}`,
+        }
+      );
+    } else {
+      res.status(400).json({error:"Email o contraaseña incorrectos"})
+    }
+  } catch(error) {
+    return res.status(500).json({ error: error });
+  } 
+}
+export const getAuthCode = async (req: Request, res: Response) => {
+  try {
+    const salt = bcrypt.genSaltSync();
+    // @ts-ignore
+    const prisma = req.prisma as PrismaClient;
+    const { email, password} = req?.body;
+    const user = await getUserByEmail(email, prisma);
+    if (user && user.password && bcrypt.compareSync(password, user.password)) {
       await sendAuthEmail(email, authCode);
       await updateUserAuthToken(user.id.toString(), bcrypt.hashSync(authCode, salt),prisma);
       return res.status(200).json(
