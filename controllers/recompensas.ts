@@ -2,8 +2,8 @@ import { ethers } from "ethers";
 import { Request, Response } from "express";
 import { number } from "joi";
 import { getBillByUser, getUserByCollection, paidFeeWithUSDT, payBTC } from "../service/bills";
-import { sendBillEmail } from "../service/mail";
-import { getUserById, getWalletBTCByUser } from "../service/user";
+import { sendBillEmail, sendNewColeccionEmail, sendPagoProduccionEmail } from "../service/mail";
+import { getAllUsers, getUserById, getWalletBTCByUser } from "../service/user";
 import contract from "../service/web3";
 import { priceFeed } from "../utils/const";
 ///// ////////////////////////////////////////// AGREGAR RECOMPENSAS //////////////////////////////////////////////////
@@ -82,6 +82,7 @@ export const addReward = async (req: Request, res: Response) => {
     console.log(error)
     res.status(500).json({ error:error });
   }}
+  
     ///// OBTENER TODAS LAS RECOMPENSAS //////////
 
   export const getAllRewards = async (req: Request, res: Response) => {
@@ -141,12 +142,14 @@ export const addReward = async (req: Request, res: Response) => {
             rewardPaid:true
           },
         })
+        await sendPagoProduccionEmail(user.email)
         res.status(200).json({data:{amount:bill.amountReward,wallet:wallet_BTC}})
 
       } else if (payMethod==="STRIPE") {
         ////////FUNCION PARA CORROBAR PAGO DE STRIPE
         ///pagar con BTC as well
         ///Escribir en la base de datos que ya ha sido pagado
+        // await sendPagoProduccionEmail(user.email)
       } else  if (payMethod==="BTC") {
           ///Buscar cuantos dias tiene la recompensa
           const theReward= await prisma.rewards.findUnique({
@@ -168,6 +171,7 @@ export const addReward = async (req: Request, res: Response) => {
             rewardPaid:true
           },
         })
+        await sendPagoProduccionEmail(user.email)
         res.status(200).json({data:{amount:newAmount,wallet:wallet_BTC}})
       } else {
         res.status(404).json({error:"Not payment method available"})

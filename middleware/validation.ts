@@ -21,7 +21,7 @@ export const querySchemaUGetAuth = Joi.object({
     .required(),
 });
 export const querySchemaAddReward = Joi.object({
-  collectionID: Joi.number().required,
+  collectionID: Joi.number().required(),
   creationDate:Joi.string().required(),
   Fecha:Joi.string().required(),
   Recompensa:Joi.string().required(),
@@ -30,4 +30,14 @@ export const querySchemaAddReward = Joi.object({
   FeeCollection:Joi.string(),
   FeeEnergy:Joi.string(),
   ratioSuccess:Joi.string(),
+});
+export const querySchemaBuyNftStripe = Joi.object({
+  collectionID: Joi.number().required(),
+  amount:Joi.number().required(),
+});
+export const querySchemaBuyNftMetamask= Joi.object({
+  collectionID: Joi.number().required()
+});
+export const querySchemaUpdateKYC= Joi.object({
+  auth_uuid: Joi.string().required()
 });

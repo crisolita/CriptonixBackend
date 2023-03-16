@@ -8,6 +8,10 @@ import userRouter from "./routes/user";
 import recompensaRouter from "./routes/recompensas";
 import billsRouter from "./routes/bills";
 import mailRouter from "./routes/mail";
+import salesRouter from "./routes/sales";
+import kycRouter from "./routes/kyc";
+
+
 
 
 
@@ -35,6 +39,10 @@ app.use("/user", userRouter);
 app.use("/recompensas", recompensaRouter);
 app.use("/bills", billsRouter);
 app.use("/mail", mailRouter);
+app.use("/sales", salesRouter);
+app.use("/kyc", kycRouter);
+
+
 
 
 

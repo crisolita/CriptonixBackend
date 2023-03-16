@@ -7,6 +7,7 @@ import {
   userEditProfile,
   getAuthCode,
   getRecoveryCode,
+  changeRolUser,
 } from "../controllers/user";
 import Joivalidator from "express-joi-validation";
 import { querySchemaRegistro, querySchemaUGetAuth } from "../middleware/validation";
@@ -28,7 +29,8 @@ router.post("/updateWallet", authenticateToken,userWalletController);
 router.post("/updateUser", authenticateToken,userEditProfile);
 router.post("/getRecovery",getRecoveryCode)
 router.post("/getAuth",validator.body(querySchemaUGetAuth),getAuthCode)
+router.post("/changeRol",changeRolUser)
 
-// router.post("/buyNFT", authenticateToken, userWalletController);
+
 
 export default router;

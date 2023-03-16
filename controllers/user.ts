@@ -11,7 +11,7 @@ import {
   updateUserProfile,
   updateUserWalletETHAddress,
 } from "../service/user";
-import { sendAuthEmail } from "../service/mail";
+import { sendAuthEmail, sendChangePasswordEmail, sendChangeWalletEmail, sendWelcomeEmail } from "../service/mail";
 
 export const convertFullName = (str: string) =>
   str.split(", ").reverse().join(" ");
@@ -41,7 +41,7 @@ export const userRegisterController = async (req: Request, res: Response) => {
           user_id:newUser.id,
         }
       })
-      
+      await sendWelcomeEmail(email)
       res.status(200).json(
         { data: { email: email, first_name: first_name,last_name:last_name } }
       );
@@ -120,6 +120,7 @@ export const getAuthCode = async (req: Request, res: Response) => {
       res.status(400).json({error:"Email o contraaseña incorrectos"})
     }
   } catch(error) {
+    console.log(error)
     return res.status(500).json({ error: error });
   } 
 }
@@ -136,6 +137,7 @@ export const userEditProfile = async (req: Request, res: Response) => {
       empresa,
       telefono} = req?.body;
       await updateUserProfile(`${user.id}`,req.body,prisma)
+      if(wallet_BTC||wallet_Kadena||wallet_LTC||wallet_Zcash) await sendChangeWalletEmail(user.email)
       return res.status(200).json({data:req.body});
 
   } catch(error) {
@@ -157,6 +159,7 @@ export const changePasswordController = async (req: Request, res: Response) => {
           { password: bcrypt.hashSync(newPassword, salt) },
           prisma
         );
+        await sendChangePasswordEmail(email)
         return res.status(200).json({ data: {email:user.email} });
       } else
         return res.status(400).json({ error: "Token 2fa incorrecto." });
@@ -181,6 +184,22 @@ export const userWalletController = async (req: Request, res: Response) => {
     );
     res.status(200).json({ data: {email:updatedUser.email,newWallet:updatedUser.wallet_ETH}});
   } catch (error ) {
+    res.status(500).json(error);
+  }
+};
+export const changeRolUser = async (req: Request, res: Response) => {
+  try {
+    // @ts-ignore
+    const prisma = req.prisma as PrismaClient;
+    const { user_id,rol } = req?.body;
+    const updatedUser = await updateUser(
+      `${user_id}`,
+      {rol},
+      prisma
+    );
+    res.status(200).json({ data: {email:updatedUser.email,newRol:updatedUser.rol}});
+  } catch (error ) {
+    console.log(error)
     res.status(500).json(error);
   }
 };

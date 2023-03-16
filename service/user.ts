@@ -30,7 +30,7 @@ export const getUserByWallet = async (wallet_ETH: string, prisma: PrismaClient) 
 
 export const updateUser = async (
   id: string,
-  data: { email?: string; password?: string },
+  data: { email?: string; password?: string, rol?: string },
   prisma: PrismaClient
 ) => {
   return await prisma.user.update({

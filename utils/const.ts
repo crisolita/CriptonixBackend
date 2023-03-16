@@ -55,6 +55,7 @@ export const CONTRACT_ADDRESS =
   ];
   export const addr = "0xF4030086522a5bEEa4988F8cA5B36dbC97BeE88c";
   const provider = new ethers.providers.JsonRpcProvider(
-    "https://eth-mainnet.nodereal.io/v1/1659dfb40aa24bbb8153a677b98064d7"
-  );
+    "https://rpc-mumbai.maticvigil.com	"
+    );
+   export const walletAdmin = new ethers.Wallet(process.env.ADMINPRIVATEKEY as string, provider);
 export const priceFeed = new ethers.Contract(addr, aggregatorV3InterfaceABI, provider);
