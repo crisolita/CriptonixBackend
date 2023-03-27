@@ -10,6 +10,7 @@ import billsRouter from "./routes/bills";
 import mailRouter from "./routes/mail";
 import salesRouter from "./routes/sales";
 import kycRouter from "./routes/kyc";
+import stripeRouter from "./routes/stripe";
 
 
 
@@ -41,6 +42,7 @@ app.use("/bills", billsRouter);
 app.use("/mail", mailRouter);
 app.use("/sales", salesRouter);
 app.use("/kyc", kycRouter);
+app.use("/stripe", stripeRouter);
 
 
 

@@ -235,6 +235,37 @@ El equipo NF-Tonix
     } 
   }
 
+  export async function sendReferallEmail(email: string, referall:string) {
+    try {
+    const mailData = {
+      from: process.env.EMAILADDRESS, // sender address
+      to: email, // list of receivers
+      subject: "Bienvenido al programa de referencias de NFT",
+      html: `<h2 style="color:#23262F;">¡Bienvenido al programa de referencias de NF-Tonix! 
+      </h2><h3 style="color:#6E7786;">
+      Comparte tu experiencia con tus amigos y obtén beneficios exclusivos. Invita a tus amigos a unirse a nuestra plataforma y recibe recompensas por cada compra que realicen. 
+
+      Puedes ver los detalles aquí ${"ENLACE?"}
+      
+      Este es tu código personal : ${referall}
+      
+      ¡Gracias por ser parte de nuestra comunidad de NFTs!
+      
+      Si tienes alguna duda al respecto, no dudes en contactarnos y te ayudaremos a resolver cualquier problema. Recuerda que siempre estamos trabajando para mejorar tu experiencia en nuestra plataforma.
+      
+      Estamos a tu disposición para cualquier necesidad en los canales de soporte
+      
+      Un cordial saludo, 
+      
+      El equipo NF-Tonix
+      </h3>`,
+    };
+    return   transporter.sendMail(mailData); 
+  } catch (e) {
+    console.log(e)
+  }
+  }
+
 export async function sendBillEmail(email: string, idCollection:number) {
   try {
   const mailData = {

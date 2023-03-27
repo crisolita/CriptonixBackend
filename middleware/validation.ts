@@ -6,7 +6,6 @@ export const querySchemaRegistro = Joi.object({
   email: Joi.string()
     .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
     .required(),
-    wallet_ETH:Joi.string()
 });
 export const querySchemaCreateNFT = Joi.object({
   nombre: Joi.string().required(),

@@ -16,14 +16,20 @@ export const getUserByCollection = async (collectionId: string, prisma: PrismaCl
     for (let x of nftsId) {
       creator.push((await contract.getTokenData(x)).creator);
     }
-    
+    const collect= await contract.collections(collectionId)
+    console.log(collect.tokenLife.toString())
+    console.log(creator)
    const wallets = creator.filter((elemento:string,index:number)=>{
      return creator.indexOf(elemento)===index;
     });
+    console.log(wallets)
     let users:any[]=[]
     for (let x of wallets) {
       const user=await getUserByWallet(x,prisma);
+      console.log(user,'hay algo aca')
+      
       const count=await contract.howManyNFTs(collectionId,x)
+      console.log(count,'hay algo aca en count')
       if(count>0 && user) {
        users.push(user)
       }

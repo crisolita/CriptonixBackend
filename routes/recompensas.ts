@@ -7,7 +7,7 @@ const router = express.Router();
 // RECUERDA PONER LOS VALIDADORES DE JOI
 //solo admins la addReward
 router.post("/addReward",addReward);
-router.post("/claimReward",kycPassed,claimReward);
+router.post("/claimReward",authenticateToken, claimReward);
 router.get("/getAll",getAllRewards);
 router.get("/getByCollection",getRewardsByCollection)
 router.get("/getOne",getOneReward)

@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import { number } from "joi";
 import { getBillByUser, getUserByCollection, paidFeeWithUSDT, payBTC } from "../service/bills";
 import { sendBillEmail, sendNewColeccionEmail, sendPagoProduccionEmail } from "../service/mail";
+import { chargeStripe, payFeeWithStripe } from "../service/stripe";
 import { getAllUsers, getUserById, getWalletBTCByUser } from "../service/user";
 import contract from "../service/web3";
 import { priceFeed } from "../utils/const";
@@ -13,6 +14,7 @@ export const addReward = async (req: Request, res: Response) => {
       // @ts-ignore
       const prisma = req.prisma as PrismaClient;
       const {reward} = req?.body;
+      console.log(req.body)
       const creationDate= (new Date()).toLocaleDateString()
       console.log(creationDate,"date")
     let recompensaTotal:number, recompensas:number[]
@@ -124,7 +126,6 @@ export const addReward = async (req: Request, res: Response) => {
           // @ts-ignore
       const prisma = req.prisma as PrismaClient;
       const {rewardID,payMethod} = req?.body;
-      console.log(user)
       const bill = await getBillByUser(Number(rewardID),Number(user.id),prisma)
       if(!bill) return res.status(404).json({error:"No bill found!!"})
       if(bill.rewardPaid) return res.status(403).json({error:"This reward is already paid"})
@@ -146,10 +147,17 @@ export const addReward = async (req: Request, res: Response) => {
         res.status(200).json({data:{amount:bill.amountReward,wallet:wallet_BTC}})
 
       } else if (payMethod==="STRIPE") {
-        ////////FUNCION PARA CORROBAR PAGO DE STRIPE
+        await payFeeWithStripe(user.id,Number(rewardID),prisma)
         ///pagar con BTC as well
-        ///Escribir en la base de datos que ya ha sido pagado
-        // await sendPagoProduccionEmail(user.email)
+        const payBtc=await payBTC(wallet_BTC,bill.amountReward)
+        await prisma.bills.update({
+          where: { id: Number(bill.id) },
+          data: {
+            feePaid:true,
+            rewardPaid:true
+          },
+        })
+        await sendPagoProduccionEmail(user.email)
       } else  if (payMethod==="BTC") {
           ///Buscar cuantos dias tiene la recompensa
           const theReward= await prisma.rewards.findUnique({

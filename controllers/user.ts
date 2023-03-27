@@ -1,8 +1,9 @@
 import { PrismaClient, User } from "@prisma/client";
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
-import { createJWT } from "../utils/utils";
+import { createJWT, generateRandomString } from "../utils/utils";
 import {
+  findReferall,
   getAllUsers,
   getUserByEmail,
   getUserById,
@@ -11,7 +12,7 @@ import {
   updateUserProfile,
   updateUserWalletETHAddress,
 } from "../service/user";
-import { sendAuthEmail, sendChangePasswordEmail, sendChangeWalletEmail, sendWelcomeEmail } from "../service/mail";
+import { sendAuthEmail, sendChangePasswordEmail, sendChangeWalletEmail, sendReferallEmail, sendWelcomeEmail } from "../service/mail";
 
 export const convertFullName = (str: string) =>
   str.split(", ").reverse().join(" ");
@@ -23,8 +24,19 @@ export const userRegisterController = async (req: Request, res: Response) => {
     const salt = bcrypt.genSaltSync();
     // @ts-ignore
     const prisma = req.prisma as PrismaClient;
-    const { email, first_name, last_name, password,wallet_ETH } = req?.body;
+    const { email, first_name, last_name, password, referallCode} = req?.body;
     const user = await getUserByEmail(email, prisma);
+    let referall;
+    let resultReferall;
+    let referallFriend;
+    do {
+      referall = generateRandomString(6);
+      resultReferall = await findReferall(referall, prisma);
+    } while (resultReferall);
+    if (referallCode) {
+      referallFriend = await findReferall(referallCode, prisma);
+      if (!referallFriend) return res.status(404).json("Codigo de referido no valido")
+    }
     if (!user) {
       const newUser=await prisma.user.create({
         data: {
@@ -32,8 +44,9 @@ export const userRegisterController = async (req: Request, res: Response) => {
           first_name:first_name,
           last_name:last_name,
           password: bcrypt.hashSync(password, salt),
-          wallet_ETH:wallet_ETH,
-          rol:"USUARIO"
+          rol:"USUARIO",
+          referall:referall,
+          referallBy: referallCode? referallCode :null
         },
       });
       await prisma.profile.create({
@@ -42,8 +55,10 @@ export const userRegisterController = async (req: Request, res: Response) => {
         }
       })
       await sendWelcomeEmail(email)
+      await sendReferallEmail(email,referall)
+      
       res.status(200).json(
-        { data: { email: email, first_name: first_name,last_name:last_name } }
+        { data: { email: email, first_name: first_name,last_name:last_name, referallCode:referall} }
       );
     } else {
       res.status(400).json({error:"Email ya registrado"})

@@ -7,7 +7,7 @@ import { kycPassed } from "../middleware/kyc";
 const validator = Joivalidator.createValidator();
 
 const router = express.Router();
-router.post("/buyNftStripe",validator.body(querySchemaBuyNftStripe),kycPassed,buyNftByStripe);
+router.post("/buyNftStripe",validator.body(querySchemaBuyNftStripe),authenticateToken,buyNftByStripe);
 router.post("/thanksBuy",validator.body(querySchemaBuyNftMetamask),authenticateToken,thanksForBuy);
 
 
