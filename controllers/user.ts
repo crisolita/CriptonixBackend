@@ -35,7 +35,7 @@ export const userRegisterController = async (req: Request, res: Response) => {
     } while (resultReferall);
     if (referallCode) {
       referallFriend = await findReferall(referallCode, prisma);
-      if (!referallFriend) return res.status(404).json("Codigo de referido no valido")
+      if (!referallFriend) return res.status(404).json({error:"Codigo de referido no valido"})
     }
     if (!user) {
       const newUser=await prisma.user.create({

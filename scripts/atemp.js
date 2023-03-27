@@ -41,7 +41,7 @@ var client_1 = require("@prisma/client");
 var prisma = new client_1.PrismaClient();
 function main() {
     return __awaiter(this, void 0, void 0, function () {
-        var bills, onlyDebts;
+        var bills, onlyDebts, now;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, prisma.bills.findMany()];
@@ -50,6 +50,8 @@ function main() {
                     onlyDebts = bills.filter(function (x) { return x.feePaid; });
                     console.log(bills);
                     console.log("----", onlyDebts);
+                    now = new Date();
+                    console.log(now);
                     return [2 /*return*/];
             }
         });
