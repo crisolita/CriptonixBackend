@@ -34,7 +34,7 @@ model Profile {
 model Rewards {
   rewardID        Int      @id @default(autoincrement())
   collectionID    Int
-  creationDate    String   @unique
+  creationDate    String 
   dates           String[]
   recompensas     Float[]
   hashrate        Float[]
@@ -67,8 +67,8 @@ model User {
 }
 
 model nftsdead {
-  id Int @id  @default(autoincrement())
-  sc_id Int  @unique
+  id      Int  @id @default(autoincrement())
+  sc_id   Int  @unique
   user_id Int
   User    User @relation(fields: [user_id], references: [id])
 }

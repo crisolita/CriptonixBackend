@@ -206,6 +206,30 @@ El equipo NF-Tonix
       console.log(e)
     } 
   }
+  export async function sendKycPassed(email: string) {
+    try {
+      const mailData = {
+        from: process.env.EMAILADDRESS, // sender address
+        to: email, // list of receivers
+        subject: "KYC superado con exito!!",
+        html: `<h2 style="color:#23262F;">¡Felicidades!</h2><h3 style="color:#6E7786;">
+      
+ Has superado con éxito el proceso de KYC. Ahora puedes acceder a todas las funciones de nuestra plataforma. ¡Gracias por confiar en nosotros!
+
+Si tienes alguna duda al respecto, no dudes en contactarnos y te ayudaremos a resolver cualquier problema. Recuerda que siempre estamos trabajando para mejorar tu experiencia en nuestra plataforma.
+
+Estamos a tu disposición para cualquier necesidad en los canales de soporte
+
+Un cordial saludo, 
+
+El equipo NF-Tonix
+        </h3>`,
+      };
+      return   transporter.sendMail(mailData); 
+    } catch (e) {
+      console.log(e)
+    } 
+  }
   export async function sendThankEmail(email: string,name:string,id:number) {
     try {
       const mailData = {

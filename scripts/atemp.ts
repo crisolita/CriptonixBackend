@@ -55,6 +55,7 @@ async function pagoProducciones() {
     const users= await getAllUsers(prisma);
     const now =Math.trunc((new Date()).getTime()/1000)
     for (let x of users) {
+    if (!x.wallet_ETH) continue
     const ids= await contract.getUserNftsId(x.wallet_ETH)
     for (let y of ids) {
       const tokenData= await contract.getTokenData(y)
@@ -64,15 +65,16 @@ async function pagoProducciones() {
       })
       if((Number(tokenData.born)+Number(collection.madurityTime)+Number(collection.tokenLife))>now && Number(collection.madurationStartedAt)>0 && !alreadyDead)  {
         await sendNFTDeadEmail(x.email,Number(y))
-        // await prisma.nftsdead.create({
-        //   sc_id:Number(y),
-        //   user_id: x.id
-        // })
+        await prisma.nftsdead.create({
+          data:{sc_id:Number(y),
+          user_id: x.id
+          }
+        })
       }
     }
     }
   }
 
 console.log("hola")
-pagoProducciones()
+// pagoProducciones()
 NFTisDEAD()

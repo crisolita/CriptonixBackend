@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { stat } from "fs";
 import { getVerifiedCustomer } from "../service/kyc";
+import { sendKycPassed } from "../service/mail";
 import { getUserByEmail, getUserById, updateUser } from "../service/user";
 
 export const updateKyc = async (req: Request, res: Response) => {
@@ -37,6 +38,7 @@ export const updateKyc = async (req: Request, res: Response) => {
       if (status) {
         await updateUser(user.id,{kycPassed:true},prisma)
       }
+      await sendKycPassed(usuario?.email)
       res.status(200).json(
       { data: status}
       );
