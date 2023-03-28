@@ -8,7 +8,6 @@ import {
   getUserByEmail,
   getUserById,
   updateUser,
-  updateUserAuthToken,
   updateUserProfile,
   updateUserWalletETHAddress,
 } from "../service/user";
@@ -103,7 +102,7 @@ export const getRecoveryCode =async (req: Request, res: Response) => {
     const user = await getUserByEmail(email, prisma);
     if (user) {
       await sendAuthEmail(email, authCode);
-      await updateUserAuthToken(user.id.toString(), bcrypt.hashSync(authCode, salt),prisma);
+      await updateUser(user.id.toString(), {authToken:bcrypt.hashSync(authCode, salt)},prisma);
       return res.status(200).json(
        {
           data: `Se ha enviado código de validación al correo: ${email}`,
@@ -125,7 +124,7 @@ export const getAuthCode = async (req: Request, res: Response) => {
     const user = await getUserByEmail(email, prisma);
     if (user && user.password && bcrypt.compareSync(password, user.password)) {
       await sendAuthEmail(email, authCode);
-      await updateUserAuthToken(user.id.toString(), bcrypt.hashSync(authCode, salt),prisma);
+      await updateUser(user.id.toString(),{authToken:bcrypt.hashSync(authCode, salt)} ,prisma);
       return res.status(200).json(
        {
           data: `Se ha enviado código de validación al correo: ${email}`,

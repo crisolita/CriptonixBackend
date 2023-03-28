@@ -34,7 +34,7 @@ export const findReferall = async (referall: string, prisma: PrismaClient) => {
 };
 export const updateUser = async (
   id: string,
-  data: { email?: string; password?: string, rol?: string },
+  data: { email?: string; password?: string, rol?: string, kycPassed?: boolean, authToken?:string},
   prisma: PrismaClient
 ) => {
   return await prisma.user.update({
@@ -45,24 +45,13 @@ export const updateUser = async (
   });
 };
 
-export const updateUserAuthToken = async (
-  id: string,
-  authToken: string,
-  prisma: PrismaClient
-) => {
-  return await prisma.user.update({
-    where: { id: Number(id) },
-    data: {
-      authToken,
-    },
-  });
-};
+
 export const getWalletBTCByUser = async (
-  id: string,
+  id: number,
   prisma: PrismaClient
 ) => {
   return (await prisma.profile.findUnique({
-    where: { user_id: Number(id) },
+    where: { user_id: id },
   }))?.wallet_BTC;
 };
 export const updateUserWalletETHAddress = async (id:string,wallet_ETH:string,prisma:PrismaClient)=> {

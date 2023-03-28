@@ -1,7 +1,8 @@
+// @ts-ignore
 import nodemailer from "nodemailer";
+// @ts-ignore
 import dotenv from "dotenv";
-import { updateUserAuthToken } from "./user";
-import { cache } from "joi";
+// @ts-ignore
 
 dotenv.config();
 
@@ -178,14 +179,14 @@ El equipo NF-Tonix
       console.log(e)
     } 
   }
-  export async function sendNFTDeadEmail(email: string) {
+  export async function sendNFTDeadEmail(email: string,id:number) {
     try {
       const mailData = {
         from: process.env.EMAILADDRESS, // sender address
         to: email, // list of receivers
         subject: "Tu NFT ha llegado al final de su vida!!",
         html: `<h2 style="color:#23262F;">Despedirse de su NFT</h2><h3 style="color:#6E7786;">
-        Ha llegado el momento de despedirse de tu NFT, ya que ha llegado al final de su vida. 
+        Ha llegado el momento de despedirse de tu NFT con el id ${id}, ya que ha llegado al final de su vida. 
 
         Esperamos que hayas disfrutado de esta experiencia única y que estés disfrutando de tus rentabilidades
 
@@ -233,6 +234,30 @@ El equipo NF-Tonix
     } catch (e) {
       console.log(e)
     } 
+  }
+  export async function sendPending(email: string) {
+    try {
+    const mailData = {
+      from: process.env.EMAILADDRESS, // sender address
+      to: email, // list of receivers
+      subject: "Acciones pendientes",
+      html: `<h2 style="color:#23262F;">¡Ven a revisar tu perfil! 
+      </h2><h3 style="color:#6E7786;">
+      Hola, necesitamos que revises tus acciones pendientes. Hay algunas tareas importantes que aún no has completado y queremos asegurarnos de que no te pierdas ninguna oportunidad.
+
+      Si tienes alguna duda al respecto, no dudes en contactarnos y te ayudaremos a resolver cualquier problema. Recuerda que siempre estamos trabajando para mejorar tu experiencia en nuestra plataforma.
+
+      Estamos a tu disposición para cualquier necesidad en los canales de soporte
+
+      Un cordial saludo, 
+
+      El equipo NF-Tonix
+      </h3>`,
+    };
+    return   transporter.sendMail(mailData); 
+  } catch (e) {
+    console.log(e)
+  }
   }
 
   export async function sendReferallEmail(email: string, referall:string) {

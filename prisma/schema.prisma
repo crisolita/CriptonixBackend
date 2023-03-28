@@ -47,19 +47,28 @@ model Rewards {
 }
 
 model User {
-  id          Int      @id @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   first_name  String
   last_name   String
-  email       String   @unique
+  email       String     @unique
   password    String
   authToken   String?
   rol         String?
-  wallet_ETH  String?  @unique
-  auth_uuid   String?  @unique
-  stripe_id   String?  @unique
-  payIDStripe String?  @unique
-  referall  String @unique
-  referallBy String? 
+  wallet_ETH  String?    @unique
+  auth_uuid   String?    @unique
+  stripe_id   String?    @unique
+  payIDStripe String?    @unique
+  referall    String     @unique
+  referallBy  String?
+  kycPassed   Boolean?
   Bills       Bills[]
   Profile     Profile?
+  nftsdead    nftsdead[]
+}
+
+model nftsdead {
+  id Int @id  @default(autoincrement())
+  sc_id Int  @unique
+  user_id Int
+  User    User @relation(fields: [user_id], references: [id])
 }
