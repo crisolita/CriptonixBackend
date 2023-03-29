@@ -24,6 +24,7 @@ export const getUserByCollection = async (collectionId: string, prisma: PrismaCl
     });
     console.log(wallets)
     let users:any[]=[]
+    ///Validar NFTs activos
     for (let x of wallets) {
       const user=await getUserByWallet(x,prisma);
       console.log(user,'hay algo aca')
