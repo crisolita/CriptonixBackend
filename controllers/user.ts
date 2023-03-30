@@ -68,9 +68,7 @@ export const userRegisterController = async (req: Request, res: Response) => {
   }
 };
 
-let authCode = JSON.stringify(
-  Math.round(Math.random() * (999999 - 100000) + 100000)
-);
+
 
 export const userLoginController = async (req: Request, res: Response) => {
   try {
@@ -95,6 +93,9 @@ export const userLoginController = async (req: Request, res: Response) => {
 };
 export const getRecoveryCode =async (req: Request, res: Response) => {
   try {
+    let authCode = JSON.stringify(
+      Math.round(Math.random() * (999999 - 100000) + 100000)
+    );
     const salt = bcrypt.genSaltSync();
     // @ts-ignore
     const prisma = req.prisma as PrismaClient;
@@ -117,6 +118,9 @@ export const getRecoveryCode =async (req: Request, res: Response) => {
 }
 export const getAuthCode = async (req: Request, res: Response) => {
   try {
+    let authCode = JSON.stringify(
+      Math.round(Math.random() * (999999 - 100000) + 100000)
+    );
     const salt = bcrypt.genSaltSync();
     // @ts-ignore
     const prisma = req.prisma as PrismaClient;
