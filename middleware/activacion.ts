@@ -23,14 +23,14 @@ export function activacion(
       // @ts-ignore
       const prisma = req.prisma as PrismaClient;
       const usuario = await getUserById(user.id,prisma)
-      const usuarioAux = await getUserById(user_id,prisma)
       const balance= await contract.balanceOf(usuario?.wallet_ETH,nft_id)
       if(balance>0) {
-      // @ts-ignore
-      req.user = usuario;
+        // @ts-ignore
+        req.user = usuario;
       } else if (usuario?.rol!=="ADMIN") {
         return res.sendStatus(403)
       } else {
+        const usuarioAux = await getUserById(user_id,prisma)
       // @ts-ignore
       req.user = usuarioAux;  
       }
