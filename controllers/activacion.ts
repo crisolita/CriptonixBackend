@@ -25,7 +25,7 @@ export const changeActive = async (req: Request, res: Response) => {
           /// VALIDAR QUE LAST PAY DATE ES HOY
          await deleteNft(Number(nft_id),prisma)
          res.status(200).json(
-          { data: {status:status,user_id,nft_id:nft_id}}
+          { data: {status:status,userid:user.id,nft_id:nft_id}}
         );  
         } else {
           return res.status(400).json({error: "Nft no existe o no ha sido pagado por desactivacion"})
@@ -36,14 +36,14 @@ export const changeActive = async (req: Request, res: Response) => {
         await prisma.nftsDesactive.create({
           data:{
             nft_id:Number(nft_id),
-            user_id:Number(user_id),
+            user_id:Number(user.id),
             lastPayDate:lastPayDate,
             dayCost:dayCost
           }
         })
     
         res.status(200).json(
-          { data: {status:status,user_id,nft_id:nft_id}}
+          { data: {status:status,userid:user.id,nft_id:nft_id}}
         );
 
     }
