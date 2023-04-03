@@ -67,7 +67,7 @@ export const userRegisterController = async (req: Request, res: Response) => {
           password: bcrypt.hashSync(password, salt),
           rol:"USUARIO",
           referall:referall,
-          referallBy: referallCode? referallCode :null
+          referallBy: referallCode? referallCode :null,
         },
       });
       await prisma.profile.create({
