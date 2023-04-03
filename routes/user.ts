@@ -8,10 +8,13 @@ import {
   getAuthCode,
   getRecoveryCode,
   changeRolUser,
+  getAllUsersController,
 } from "../controllers/user";
 import Joivalidator from "express-joi-validation";
 import { querySchemaRegistro, querySchemaUGetAuth } from "../middleware/validation";
 import { authenticateToken } from "../middleware/auth";
+import { getAllUsers } from "../service/user";
+import { isAdmin } from "../middleware/isAdmin";
 const validator = Joivalidator.createValidator();
 
 const router = express.Router();
@@ -29,7 +32,10 @@ router.post("/updateWallet", authenticateToken,userWalletController);
 router.post("/updateUser", authenticateToken,userEditProfile);
 router.post("/getRecovery",getRecoveryCode)
 router.post("/getAuth",validator.body(querySchemaUGetAuth),getAuthCode)
-router.post("/changeRol",changeRolUser)
+router.post("/changeRol",isAdmin, changeRolUser)
+router.get("/getAll",isAdmin, getAllUsersController)
+
+
 
 
 

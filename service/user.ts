@@ -8,11 +8,6 @@ export const getUserById = async (id: string, prisma: PrismaClient) => {
 
 export const getAllUsers = async (prisma: PrismaClient) => {
   return await prisma.user.findMany({
-    where: {
-      NOT: {
-        id: 1,
-      },
-    },
   });
 };
 

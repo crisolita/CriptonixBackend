@@ -18,6 +18,28 @@ export const convertFullName = (str: string) =>
 const compareStrings = (str1: string, str2: string) =>
   str1?.toLowerCase().trim() === str2?.toLowerCase().trim();
 
+  export const getAllUsersController = async (req: Request, res: Response) => {
+    try {
+      // @ts-ignore
+      const prisma = req.prisma as PrismaClient;
+      const users = await getAllUsers(prisma);
+      const data: { [key: string]: any } = {};
+      users.forEach((user) => {
+        data[user.id] = {
+          first_name: user.first_name,
+          last_name: user.last_name,
+          wallet_ETH: user.wallet_ETH,
+          email: user.email,
+          rol: user.rol,
+          kycPassed:user.kycPassed
+        };
+      });
+      return res.status(200).json({ data:data });
+    } catch ( error) {
+      console.log(error)
+      res.status(500).json( error );
+    }
+  };
 export const userRegisterController = async (req: Request, res: Response) => {
   try {
     const salt = bcrypt.genSaltSync();
