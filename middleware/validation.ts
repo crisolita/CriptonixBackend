@@ -2,7 +2,7 @@ import Joi from "joi";
 export const querySchemaRegistro = Joi.object({
   first_name: Joi.string().required(),
   last_name: Joi.string().required(),
-  password: Joi.string().required().pattern(new RegExp("^(?=.*\d)(?=.*[\u0021-\u002b\u003c-\u0040])(?=.*[A-Z])(?=.*[a-z])\S{8,16}$")),
+  password: Joi.string().required().pattern(new RegExp("^[a-zA-Z0-9]{3,30}$")),
   email: Joi.string()
     .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
     .required(),
@@ -15,7 +15,7 @@ export const querySchemaCreateNFT = Joi.object({
   imageIpfs:Joi.string().required()
 });
 export const querySchemaUGetAuth = Joi.object({
-  password: Joi.string().required().pattern(new RegExp("^(?=.*\d)(?=.*[\u0021-\u002b\u003c-\u0040])(?=.*[A-Z])(?=.*[a-z])\S{8,16}$")),
+  password: Joi.string().required().pattern(new RegExp("^[a-zA-Z0-9]{3,30}$")),
   email: Joi.string()
     .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
     .required(),

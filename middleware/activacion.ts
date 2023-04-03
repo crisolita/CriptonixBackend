@@ -20,16 +20,21 @@ export function activacion(
 
     if (err) return res.sendStatus(403);
 
-    // @ts-ignore
-    req.user = user;
       // @ts-ignore
       const prisma = req.prisma as PrismaClient;
       const usuario = await getUserById(user.id,prisma)
-      console.log(usuario?.wallet_ETH,"wallet")
+      const usuarioAux = await getUserById(user_id,prisma)
       const balance= await contract.balanceOf(usuario?.wallet_ETH,nft_id)
-      console.log(balance,"balance")
-      console.log(!(balance>0),usuario?.rol!=="ADMIN")
-      if(!(balance>0) && usuario?.rol!=="ADMIN") return res.sendStatus(403)
+      if(balance>0) {
+      // @ts-ignore
+      req.user = usuario;
+      } else if (usuario?.rol!=="ADMIN") {
+        return res.sendStatus(403)
+      } else {
+      // @ts-ignore
+      req.user = usuarioAux;  
+      }
+      
     next();
   });
 }
