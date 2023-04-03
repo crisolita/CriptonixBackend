@@ -7,6 +7,7 @@ import {
   getAllUsers,
   getUserByEmail,
   getUserById,
+  getUserByWallet,
   updateUser,
   updateUserProfile,
   updateUserWalletETHAddress,
@@ -217,12 +218,17 @@ export const userWalletController = async (req: Request, res: Response) => {
     // @ts-ignore
     const prisma = req.prisma as PrismaClient;
     const { wallet } = req?.body;
-    const updatedUser = await updateUserWalletETHAddress(
-      `${user.id}`,
-      wallet,
-      prisma
-    );
-    res.status(200).json({ data: {email:updatedUser.email,newWallet:updatedUser.wallet_ETH}});
+    const usuario= await getUserByWallet(wallet,prisma)
+    if(!usuario) {
+      const updatedUser = await updateUserWalletETHAddress(
+        `${user.id}`,
+        wallet,
+        prisma
+      );
+      res.status(200).json({ data: {email:updatedUser.email,newWallet:updatedUser.wallet_ETH}});
+    } else {
+      res.status(400).json({error:"Wallet ya registrada"})
+    }
   } catch (error ) {
     res.status(500).json(error);
   }

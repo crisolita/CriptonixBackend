@@ -22,13 +22,12 @@ export const changeActive = async (req: Request, res: Response) => {
         /// borrar de la base de datos
         const today= new Date()
         if(nft && differenceInDays(new Date(nft.lastPayDate),today)==0) {
-          /// VALIDAR QUE LAST PAY DATE ES HOY
          await deleteNft(Number(nft_id),prisma)
          res.status(200).json(
           { data: {status:status,userid:user.id,nft_id:nft_id}}
         );  
         } else {
-          return res.status(400).json({error: "Nft no existe o no ha sido pagado por desactivacion"})
+          return res.status(400).json({data: "No ha sido pagado por desactivacion"})
         }
       } else {
         ////agregar a la base de datos
