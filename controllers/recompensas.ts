@@ -127,9 +127,12 @@ export const addReward = async (req: Request, res: Response) => {
       const prisma = req.prisma as PrismaClient;
       const {rewardID,payMethod} = req?.body;
       const bill = await getBillByUser(Number(rewardID),Number(user.id),prisma)
+      
       if(!bill) return res.status(404).json({error:"No bill found!!"})
       if(bill.rewardPaid) return res.status(403).json({error:"This reward is already paid"})
+      
       const wallet_BTC= await getWalletBTCByUser(user.id,prisma);
+      
       if(!wallet_BTC) return res.status(404).json({error:"Not wallet BTC found!!"})
       if(payMethod==="USDT") {
         const bool=await paidFeeWithUSDT(Number(rewardID),Number(user.id),prisma)

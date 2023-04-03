@@ -15,7 +15,7 @@ import { querySchemaRegistro, querySchemaUGetAuth } from "../middleware/validati
 import { authenticateToken } from "../middleware/auth";
 import { getAllUsers } from "../service/user";
 import { isAdmin } from "../middleware/isAdmin";
-const validator = Joivalidator.createValidator();
+const validator = Joivalidator.createValidator({passError: true});
 
 const router = express.Router();
 

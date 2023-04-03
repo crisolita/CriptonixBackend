@@ -14,6 +14,8 @@ import {
 } from "../service/user";
 import { sendAuthEmail, sendChangePasswordEmail, sendChangeWalletEmail, sendReferallEmail, sendWelcomeEmail } from "../service/mail";
 
+
+
 export const convertFullName = (str: string) =>
   str.split(", ").reverse().join(" ");
 const compareStrings = (str1: string, str2: string) =>
@@ -43,6 +45,7 @@ const compareStrings = (str1: string, str2: string) =>
   };
 export const userRegisterController = async (req: Request, res: Response) => {
   try {
+    console.log("que paso")
     const salt = bcrypt.genSaltSync();
     // @ts-ignore
     const prisma = req.prisma as PrismaClient;
