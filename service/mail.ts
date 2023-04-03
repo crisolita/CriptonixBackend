@@ -22,12 +22,71 @@ export const transporter = nodemailer.createTransport({
 });
 export async function sendInfoEmail(email: string, info: string) {
   try {
-    console.log("estoy aqui o que")
+
   const mailData = {
     from: process.env.EMAILADDRESS, // sender address
     to: email, // list of receivers
     subject: "INFORMACION DE INTERES",
     html: `<h2 style="color:#23262F;">INFORMACIÓN.</h2><h3 style="color:#6E7786;">${info}</h3>`,
+  };
+  return   transporter.sendMail(mailData); 
+} catch (e) {
+  console.log(e)
+}
+}
+export async function sendActiveEmail(email: string) {
+  try {
+
+  const mailData = {
+    from: process.env.EMAILADDRESS, // sender address
+    to: email, // list of receivers
+    subject: "Activación NF-Tonix",
+    html: `<h2 style="color:#23262F;">Tu NF-Tonix ha sido activado:.</h2><h3 style="color:#6E7786;">
+    ¡Felicidades! 
+
+Tu NF-Tonix ha sido activado y ya puedes disfrutar de todas sus ventajas. 
+
+Sé parte de esta nueva revolución disfrutando semanalmente de tus producciones. 
+
+Guarda tu NFT en un lugar seguro para que siempre puedas acceder a él cuando lo necesites. 
+
+¡Gracias por ser parte de NF-Tonix !
+
+Si tienes alguna duda al respecto, no dudes en contactarnos y te ayudaremos a resolver cualquier problema. Recuerda que siempre estamos trabajando para mejorar tu experiencia en nuestra plataforma.
+
+Estamos a tu disposición para cualquier necesidad en los canales de soporte
+
+Un cordial saludo, 
+
+El equipo NF-Tonix
+</h3>`,
+  };
+  return   transporter.sendMail(mailData); 
+} catch (e) {
+  console.log(e)
+}
+}
+export async function sendDesactiveEmail(email: string, costePorDia: number) {
+  try {
+
+  const mailData = {
+    from: process.env.EMAILADDRESS, // sender address
+    to: email, // list of receivers
+    subject: "Desactivación NF-Tonix",
+    html: `<h2 style="color:#23262F;">Tu NF-Tonix ha sido desactivado a petición tuya. 
+    .</h2><h3 style="color:#6E7786;">
+    De acuerdo a los atributos de tu colección tu NF-tonix tiene un coste de almacenaje de ${costePorDia} USD/día que podrás abonar en tus liquidaciones semanales
+
+    Recuerda que si pasan 30 días sin que abones este coste perderás la propiedad de tu NF-Tonix de acuerdo a nuestros términos y condiciones
+    
+    Si tienes alguna duda al respecto, no dudes en contactarnos y te ayudaremos a resolver cualquier problema. Recuerda que siempre estamos trabajando para mejorar tu experiencia en nuestra plataforma.
+    
+    Estamos a tu disposición para cualquier necesidad en los canales de soporte
+    
+    Un cordial saludo, 
+    
+    El equipo NF-Tonix
+    </h3>`,
   };
   return   transporter.sendMail(mailData); 
 } catch (e) {

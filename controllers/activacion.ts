@@ -4,6 +4,7 @@ import contract from "../service/web3";
 import { deleteNft, getNFTdesactiveById } from "../service/activacion";
 import { differenceInDays } from 'date-fns'
 import { getUserById } from "../service/user";
+import { sendActiveEmail, sendDesactiveEmail } from "../service/mail";
 const axios = require("axios").default;
 
 ///// ////////////////////////////////////////// Cambiar activacion de un NFT //////////////////////////////////////////////////
@@ -15,7 +16,7 @@ export const changeActive = async (req: Request, res: Response) => {
       const prisma = req.prisma as PrismaClient;
       const {nft_id,user_id} = req?.body;
       const lastPayDate= (new Date()).toLocaleDateString()
-    const tokenData=await contract.getTokenData(nft_id)
+      const tokenData=await contract.getTokenData(nft_id)
       const status= (tokenData).active;
       if(status) {
         const nft = await getNFTdesactiveById(Number(nft_id),prisma)
@@ -23,6 +24,7 @@ export const changeActive = async (req: Request, res: Response) => {
         const today= new Date()
         if(nft && differenceInDays(new Date(nft.lastPayDate),today)==0) {
          await deleteNft(Number(nft_id),prisma)
+         await sendActiveEmail(user.email)
          res.status(200).json(
           { data: {status:status,userid:user.id,nft_id:nft_id}}
         );  
@@ -40,6 +42,7 @@ export const changeActive = async (req: Request, res: Response) => {
             dayCost:dayCost
           }
         })
+        await sendDesactiveEmail(user.email,dayCost)
     
         res.status(200).json(
           { data: {status:status,userid:user.id,nft_id:nft_id}}
