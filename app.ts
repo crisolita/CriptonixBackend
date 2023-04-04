@@ -52,6 +52,10 @@ app.use("/active", activacionRouter);
 app.use((err:any, req:any, res:any, next:any) => {
   if (err && err.error && err.error.isJoi) {
     // we had a joi error, let's return a custom 400 json response
+    const cadena = err.error.details[0].message
+    console.log(cadena)
+    const i= cadena.indexOf("")
+    console.log(cadena.slice(1,i))
     res.status(400).json({
       error: err.error.details[0].message
     });
