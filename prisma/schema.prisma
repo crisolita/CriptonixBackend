@@ -28,6 +28,7 @@ model Profile {
   wallet_Zcash  String? @unique
   empresa       String?
   telefono      String?
+  direccion     String?
   User          User    @relation(fields: [user_id], references: [id])
 }
 
@@ -47,24 +48,26 @@ model Rewards {
 }
 
 model User {
-  id            Int             @id @default(autoincrement())
-  first_name    String
-  last_name     String
-  email         String          @unique
-  password      String
-  authToken     String?
-  rol           String?
-  wallet_ETH    String?         @unique
-  auth_uuid     String?         @unique
-  stripe_id     String?         @unique
-  payIDStripe   String?         @unique
-  referall      String          @unique
-  referallBy    String?
-  kycPassed     Boolean?
-  Bills         Bills[]
-  Profile       Profile?
-  nftsdead      nftsdead[]
-  nftsDesactive nftsDesactive[]
+  id             Int              @id @default(autoincrement())
+  first_name     String
+  last_name      String
+  email          String           @unique
+  password       String
+  authToken      String?
+  rol            String?
+  wallet_ETH     String?          @unique
+  auth_uuid      String?          @unique
+  stripe_id      String?          @unique
+  payIDStripe    String?          @unique
+  referall       String           @unique
+  referallBy     String?
+  kycPassed      Boolean?
+  Bills          Bills[]
+  Profile        Profile?
+  nftsdead       nftsdead[]
+  nftsDesactive  nftsDesactive[]
+  facturas       facturas[]
+  notificaciones notificaciones[]
 }
 
 model nftsdead {
@@ -80,4 +83,27 @@ model nftsDesactive {
   lastPayDate String
   dayCost     Float
   User        User   @relation(fields: [user_id], references: [id])
+}
+
+model facturas {
+  id             Int     @id @default(autoincrement())
+  user_id        Int
+  fecha          String
+  cantidad       Int
+  coste_unitario Int
+  descripcion    String?
+  first_name     String
+  last_name      String
+  direccion      String?
+  User           User    @relation(fields: [user_id], references: [id])
+}
+
+model notificaciones {
+  id          Int     @id @default(autoincrement())
+  user_id     Int
+  fecha       String
+  titulo      String
+  tipo        String
+  descripcion String?
+  User        User    @relation(fields: [user_id], references: [id])
 }

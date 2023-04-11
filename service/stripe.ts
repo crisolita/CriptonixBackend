@@ -9,6 +9,8 @@ const stripe = new Stripe(env.STRIPE_SECRETKEY?env.STRIPE_SECRETKEY:"",{
 });
 
 export const chargeStripe = async (user_id: number,amount:number, prisma: PrismaClient) => {
+    
+  try {
     const user = await prisma.user.findUnique({where:{id:user_id}})
     if(user && user.payIDStripe && user.stripe_id) {
       const charge = await stripe.paymentIntents.create({
@@ -22,7 +24,18 @@ export const chargeStripe = async (user_id: number,amount:number, prisma: Prisma
       return charge
     } else {
       throw new Error("Usuario no registrado");
-    }
+    } 
+  } catch (e) {
+    await prisma.notificaciones.create({
+      data:{
+        tipo:"Pago rechazado",
+        titulo:"Pago no exitoso",
+        fecha:new Date().toDateString(),
+        descripcion:`Pago rechazado por la cantidad de ${amount}`,
+        user_id:user_id
+      }
+    })
+  }
     
  
 };

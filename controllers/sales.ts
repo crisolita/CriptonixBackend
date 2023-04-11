@@ -14,15 +14,35 @@ export const buyNftByStripe = async (req: Request, res: Response) => {
       // @ts-ignore
       const prisma = req.prisma as PrismaClient;
     
-      const { amount, collectionID,price} = req?.body;
+      const { amount, collectionID} = req?.body;
       const name= await contract.collections(collectionID)
       console.log(Number(ethers.utils.formatEther(name.price.toString()))*amount*100)
-      
+      const usuario= await getUserByEmail(user.email,prisma)
       await chargeStripe(user.id,Number(ethers.utils.formatEther(name.price.toString()))*amount*100,prisma);
       const wallet= (await getUserById(user.id,prisma))?.wallet_ETH
       if(!wallet) return res.status(404).json({error:"Not wallet ETH found!"})
       const tx= await contract.connect(walletAdmin).addExternalBuy(wallet,ethers.utils.parseEther(amount.toString()),collectionID,{gasLimit:300000})
+      await prisma.facturas.create({
+        data:{
+          user_id:user.id,
+          fecha:new Date(),
+          cantidad:amount,
+          coste_unitario:Number(ethers.utils.formatEther(name.price)),
+          descripcion:`Compra de ${amount} NFTs a traves de metamask`,
+          first_name:usuario?.first_name,
+          last_name:usuario?.last_name
+        }
+      })
       await sendThankEmail(user.email,name.description,collectionID)
+      await prisma.notificaciones.create({
+        data:{
+          tipo:"Compra NF-Tonix confirmada",
+          titulo:"Compra confirmada",
+          fecha:new Date().toDateString(),
+          descripcion:`Tienes disponible un NF-Tonix de la coleccion ${name.description}`,
+          user_id:user.id
+        }
+      })
       res.status(200).json(
       { data: "tx"}
       );
@@ -37,8 +57,29 @@ export const buyNftByStripe = async (req: Request, res: Response) => {
     const user = req.user as User;
       // @ts-ignore
       const prisma = req.prisma as PrismaClient;
-      const { collectionID} = req?.body;
+      const usuario= await getUserByEmail(user.email,prisma)
+      const { collectionID,cantidad} = req?.body;
       const name= await contract.collections(collectionID)
+      await prisma.facturas.create({
+        data:{
+          user_id:user.id,
+          fecha:new Date(),
+          cantidad:cantidad,
+          coste_unitario:Number(ethers.utils.formatEther(name.price)),
+          descripcion:`Compra de ${cantidad} NFTs a traves de metamask`,
+          first_name:usuario?.first_name,
+          last_name:usuario?.last_name
+        }
+      })
+      await prisma.notificaciones.create({
+        data:{
+          tipo:"Compra NF-Tonix confirmada",
+          titulo:"Compra confirmada",
+          fecha:new Date().toDateString(),
+          descripcion:`Tienes disponible un NF-Tonix de la coleccion ${name.description}`,
+          user_id:user.id
+        }
+      })
       await sendThankEmail(user.email,name.description,collectionID)
       res.status(200).json(
       { data: {email:user.email,collecctionName:name.description}}

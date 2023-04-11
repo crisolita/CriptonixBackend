@@ -45,7 +45,6 @@ const compareStrings = (str1: string, str2: string) =>
   };
 export const userRegisterController = async (req: Request, res: Response) => {
   try {
-    console.log("que paso")
     const salt = bcrypt.genSaltSync();
     // @ts-ignore
     const prisma = req.prisma as PrismaClient;

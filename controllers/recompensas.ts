@@ -4,7 +4,7 @@ import { number } from "joi";
 import { getBillByUser, getUserByCollection, paidFeeWithUSDT, payBTC } from "../service/bills";
 import { sendBillEmail, sendNewColeccionEmail, sendPagoProduccionEmail } from "../service/mail";
 import { chargeStripe, payFeeWithStripe } from "../service/stripe";
-import { getAllUsers, getUserById, getWalletBTCByUser } from "../service/user";
+import { getAllUsers, getUserByEmail, getUserById, getWalletBTCByUser } from "../service/user";
 import contract from "../service/web3";
 import { priceFeed } from "../utils/const";
 ///// ////////////////////////////////////////// AGREGAR RECOMPENSAS //////////////////////////////////////////////////
@@ -55,6 +55,15 @@ export const addReward = async (req: Request, res: Response) => {
             }
           })
           await sendBillEmail(x.email,newReward.collectionID)
+          await prisma.notificaciones.create({
+            data:{
+              tipo:"Liquidacion disponible",
+              titulo:"Liquidacion semanal",
+              fecha:new Date().toDateString(),
+              descripcion:`Tienes disponible ${newReward.totalRecompensa/numberOfNft.length} BTC`,
+              user_id:x.id
+            }
+          })
         }
   
         
@@ -134,11 +143,27 @@ export const addReward = async (req: Request, res: Response) => {
       const wallet_BTC= await getWalletBTCByUser(user.id,prisma);
       
       if(!wallet_BTC) return res.status(404).json({error:"Not wallet BTC found!!"})
+      const theReward= await prisma.rewards.findUnique({
+        where:{rewardID:Number(rewardID)}
+      })
+      const coleccion= await contract.collections(theReward.collectionID)
       if(payMethod==="USDT") {
         const bool=await paidFeeWithUSDT(Number(rewardID),Number(user.id),prisma)
         if(!bool) return res.status(403).json({error:"The payment with USDT failed"});
         const payment= await payBTC(wallet_BTC,bill.amountReward )
         if(!payment) return res.status(500).json({error: "The btc payment failed"})
+        const usuario= await getUserByEmail(user.email,prisma)
+        await prisma.facturas.create({
+          data:{
+            user_id:user.id,
+            fecha:new Date(),
+            cantidad:theReward.dates.length,
+            coste_unitario:coleccion.energyCost,
+            descripcion:`Pago de ${Number(ethers.utils.formatEther(coleccion.energyCost.toString()))*theReward.dates.length}$ por gasto de energia de recompensa en BTC ${theReward.amountReward}, a traves de metamask`,
+            first_name:usuario?.first_name,
+            last_name:usuario?.last_name
+          }
+        })
         await prisma.bills.update({
           where: { id: Number(bill.id) },
           data: {
@@ -147,12 +172,33 @@ export const addReward = async (req: Request, res: Response) => {
           },
         })
         await sendPagoProduccionEmail(user.email)
+        await prisma.notificaciones.create({
+          data:{
+            tipo:"Pago exitoso",
+            titulo:"Pago de costo de energia exitoso",
+            fecha:new Date().toDateString(),
+            descripcion:`Tienes disponible ${bill.amountReward} BTC`,
+            user_id:user.id
+          }
+        })
         res.status(200).json({data:{amount:bill.amountReward,wallet:wallet_BTC}})
 
       } else if (payMethod==="STRIPE") {
         await payFeeWithStripe(user.id,Number(rewardID),prisma)
         ///pagar con BTC as well
         const payBtc=await payBTC(wallet_BTC,bill.amountReward)
+        const usuario= await getUserByEmail(user.email,prisma)
+        await prisma.facturas.create({
+          data:{
+            user_id:user.id,
+            fecha:new Date(),
+            cantidad:theReward.dates.length,
+            coste_unitario:coleccion.energyCost,
+            descripcion:`Pago de ${Number(ethers.utils.formatEther(coleccion.energyCost.toString()))*theReward.dates.length}$ por gasto de energia de recompensa en BTC ${theReward.amountReward}, a traves de tarjeta`,
+            first_name:usuario?.first_name,
+            last_name:usuario?.last_name
+          }
+        })
         await prisma.bills.update({
           where: { id: Number(bill.id) },
           data: {
@@ -160,15 +206,23 @@ export const addReward = async (req: Request, res: Response) => {
             rewardPaid:true
           },
         })
+        await prisma.notificaciones.create({
+          data:{
+            tipo:"Pago procesado",
+            titulo:"Pago de costo de energia exitoso",
+            fecha:new Date().toDateString(),
+            descripcion:`Tienes disponible ${bill.amountReward} BTC`,
+            user_id:user.id
+          }
+        })
         await sendPagoProduccionEmail(user.email)
+        res.status(200).json({data:{amount:bill.amountReward,wallet:wallet_BTC}})
+
       } else  if (payMethod==="BTC") {
           ///Buscar cuantos dias tiene la recompensa
-          const theReward= await prisma.rewards.findUnique({
-            where:{rewardID:Number(rewardID)}
-          })
-          const dayCost= await contract.collections(theReward.collectionID)
+          
           const btc_price= await priceFeed.latestRoundData()
-          const feeBTC=Number(ethers.utils.formatEther(dayCost.energyCost.toString()))/Number(btc_price.answer.div(100000))*theReward.dates.length
+          const feeBTC=Number(ethers.utils.formatEther(coleccion.energyCost.toString()))/Number(btc_price.answer.div(100000))*theReward.dates.length
           ///restarle el btc 
           const newAmount= bill.amountReward-feeBTC;
           ///pagar
@@ -182,7 +236,28 @@ export const addReward = async (req: Request, res: Response) => {
             rewardPaid:true
           },
         })
+        const usuario= await getUserByEmail(user.email,prisma)
+        await prisma.facturas.create({
+          data:{
+            user_id:user.id,
+            fecha:new Date(),
+            cantidad:theReward.dates.length,
+            coste_unitario:coleccion.energyCost,
+            descripcion:`Pago de ${Number(ethers.utils.formatEther(coleccion.energyCost.toString()))*theReward.dates.length} deducido de la recompensa en BTC por gasto de energia de recompensa en BTC ${theReward.amountReward}`,
+            first_name:usuario?.first_name,
+            last_name:usuario?.last_name
+          }
+        })
         await sendPagoProduccionEmail(user.email)
+        await prisma.notificaciones.create({
+          data:{
+            tipo:"Pago procesado",
+            titulo:"Pago de costo de energia exitoso",
+            fecha:new Date().toDateString(),
+            descripcion:`Tienes disponible ${newAmount} BTC`,
+            user_id:user.id
+          }
+        })
         res.status(200).json({data:{amount:newAmount,wallet:wallet_BTC}})
       } else {
         res.status(404).json({error:"Not payment method available"})
