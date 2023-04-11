@@ -104,7 +104,7 @@ export const userLoginController = async (req: Request, res: Response) => {
     if (user ) {
       if (bcrypt.compareSync(authCode,user.authToken? user.authToken :""))
         return res.status(200).json(
-       { data: {email:user.email,userid:user.id,first_name:user.first_name,last_name:user.last_name,rol:user.rol,wallet_ETH:user.wallet_ETH,  token: createJWT(user)} }
+       { data: {email:user.email,userid:user.id,first_name:user.first_name,last_name:user.last_name,rol:user.rol,wallet_ETH:user.wallet_ETH,  token: createJWT(user),stripeId:user.stripe_id} }
         );
       else
         return res.status(403).json({ error: "Token 2fa incorrecto." });
