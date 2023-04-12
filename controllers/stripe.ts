@@ -42,3 +42,20 @@ export const createCustomerAndPaymentMethod = async (req: Request, res: Response
     console.log(error)
     res.status(500).json({error: error });
   }}
+  export const isAuthStripe = async (req: Request, res: Response) => {
+    try {
+         // @ts-ignore
+    const user = req.user as User;
+      // @ts-ignore
+      const prisma = req.prisma as PrismaClient;
+    const data= (await prisma.user.findUnique({
+      where:{id:user.id}
+    })).stripe_id? true : false
+      res.status(200).json(
+      { data }
+      );
+    }
+  catch (error) {
+    console.log(error)
+    res.status(500).json({error: error });
+  }}
