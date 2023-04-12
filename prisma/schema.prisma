@@ -90,7 +90,7 @@ model facturas {
   user_id        Int
   fecha          String
   cantidad       Int
-  coste_unitario Int
+  coste_unitario Float
   descripcion    String?
   first_name     String
   last_name      String

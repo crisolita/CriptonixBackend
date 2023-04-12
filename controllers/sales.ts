@@ -16,7 +16,6 @@ export const buyNftByStripe = async (req: Request, res: Response) => {
     
       const { amount, collectionID} = req?.body;
       const name= await contract.collections(collectionID)
-      console.log(Number(ethers.utils.formatEther(name.price.toString()))*amount*100)
       const usuario= await getUserByEmail(user.email,prisma)
       await chargeStripe(user.id,Number(ethers.utils.formatEther(name.price.toString()))*amount*100,prisma);
       const wallet= (await getUserById(user.id,prisma))?.wallet_ETH
@@ -44,7 +43,7 @@ export const buyNftByStripe = async (req: Request, res: Response) => {
         }
       })
       res.status(200).json(
-      { data: "tx"}
+      { data: tx}
       );
     }
   catch (error) {
