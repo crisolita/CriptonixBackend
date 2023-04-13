@@ -30,7 +30,8 @@ export const buyNftByStripe = async (req: Request, res: Response) => {
           coste_unitario:Number(ethers.utils.formatEther(name.price)),
           descripcion:`Compra de ${amount} NFTs a traves de metamask`,
           first_name:usuario?.first_name,
-          last_name:usuario?.last_name
+          last_name:usuario?.last_name,
+          tipo:"COMPRA"
         }
       })
       await sendThankEmail(user.email,name.description,collectionID)
@@ -68,8 +69,8 @@ export const buyNftByStripe = async (req: Request, res: Response) => {
           coste_unitario:Number(ethers.utils.formatEther(name.price)),
           descripcion:`Compra de ${cantidad} NFTs a traves de metamask`,
           first_name:usuario?.first_name,
-          last_name:usuario?.last_name
-        }
+          last_name:usuario?.last_name,
+          tipo:"COMPRA"}
       })
       await prisma.notificaciones.create({
         data:{

@@ -1,3 +1,6 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -32,6 +35,15 @@ model Profile {
   User          User    @relation(fields: [user_id], references: [id])
 }
 
+model Empresa {
+  id        Int     @id @default(autoincrement())
+  user_id   Int     @unique
+  nombre    String
+  direccion String?
+  CIF       String?
+  User      User    @relation(fields: [user_id], references: [id])
+}
+
 model Rewards {
   rewardID        Int      @id @default(autoincrement())
   collectionID    Int
@@ -64,6 +76,7 @@ model User {
   kycPassed      Boolean?
   Bills          Bills[]
   Profile        Profile?
+  Empresa        Empresa?
   nftsdead       nftsdead[]
   nftsDesactive  nftsDesactive[]
   facturas       facturas[]
@@ -95,6 +108,7 @@ model facturas {
   first_name     String
   last_name      String
   direccion      String?
+  tipo  String
   User           User    @relation(fields: [user_id], references: [id])
 }
 

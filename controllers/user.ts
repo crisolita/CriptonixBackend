@@ -5,6 +5,8 @@ import { createJWT, generateRandomString } from "../utils/utils";
 import {
   findReferall,
   getAllUsers,
+  getProfileByUser,
+  getProfiles,
   getUserByEmail,
   getUserById,
   getUserByWallet,
@@ -13,6 +15,7 @@ import {
   updateUserWalletETHAddress,
 } from "../service/user";
 import { sendAuthEmail, sendChangePasswordEmail, sendChangeWalletEmail, sendReferallEmail, sendWelcomeEmail } from "../service/mail";
+import { id } from "date-fns/locale";
 
 
 
@@ -26,25 +29,257 @@ const compareStrings = (str1: string, str2: string) =>
       // @ts-ignore
       const prisma = req.prisma as PrismaClient;
       const users = await getAllUsers(prisma);
-      const data: { [key: string]: any } = {};
-      users.forEach((user) => {
-        data[user.id] = {
+      let data=[];
+      const profiles = await getProfiles(prisma)
+      for(let user of users) {
+        const profile= profiles.filter((x)=>{return x.user_id==user.id})
+         data.push({
+          user_id: user.id,
           first_name: user.first_name,
           last_name: user.last_name,
           wallet_ETH: user.wallet_ETH,
           email: user.email,
           rol: user.rol,
-          kycPassed:user.kycPassed,
-          stripeId:user.stripe_id,
-          referall:user.referall
-        };
-      });
-      return res.status(200).json({ data:data });
+          kycPassed: user.kycPassed,
+          stripeId: user.stripe_id,
+          referall: user.referall,
+          wallet_BTC:profile[0]?.wallet_BTC,
+          telefono:profile[0]?.telefono,
+          direccion:profile[0]?.direccion,
+          empresa:profile[0]?.empresa,
+          wallet_LTC:profile[0]?.wallet_LTC,
+          wallet_Zcash:profile[0]?.wallet_Zcash,
+          wallet_Kadena:profile[0]?.wallet_Kadena  
+        });
+      }
+      return res.status(200).json({ data });
     } catch ( error) {
       console.log(error)
       res.status(500).json( error );
     }
   };
+  export const getUserByemail = async (req: Request, res: Response) => {
+    try {
+      // @ts-ignore
+      const prisma = req.prisma as PrismaClient;
+      // @ts-ignore
+      const {email}= req.body;
+      const user = await getUserByEmail(email,prisma);
+    
+      if(!user) return res.status(404).json({error:"No hay usuario con ese email"})
+      const profile = await getProfileByUser(user.id,prisma)
+        const data={
+          user_id: user.id,
+          first_name: user.first_name,
+          last_name: user.last_name,
+          wallet_ETH: user.wallet_ETH,
+          email: user.email,
+          rol: user.rol,
+          kycPassed: user.kycPassed,
+          stripeId: user.stripe_id,
+          referall: user.referall,
+          wallet_BTC:profile?.wallet_BTC,
+          telefono:profile?.telefono,
+          direccion:profile?.direccion,
+          empresa:profile?.empresa,
+          wallet_LTC:profile?.wallet_LTC,
+          wallet_Zcash:profile?.wallet_Zcash,
+          wallet_Kadena:profile?.wallet_Kadena  
+        };
+      return res.status(200).json({ data });
+    } catch ( error) {
+      console.log(error)
+      res.status(500).json( error );
+    }
+  };
+  export const getuserById = async (req: Request, res: Response) => {
+    try {
+      // @ts-ignore
+      const prisma = req.prisma as PrismaClient;
+      // @ts-ignore
+      const {id}= req.body;
+      const user = await getUserById(Number(id),prisma);
+      if(!user) return res.status(404).json({error:"No hay usuario con ese email"})
+      const profile = await getProfileByUser(user.id,prisma)
+        const data={
+          user_id: user.id,
+          first_name: user.first_name,
+          last_name: user.last_name,
+          wallet_ETH: user.wallet_ETH,
+          email: user.email,
+          rol: user.rol,
+          kycPassed: user.kycPassed,
+          stripeId: user.stripe_id,
+          referall: user.referall,
+          wallet_BTC:profile?.wallet_BTC,
+          telefono:profile?.telefono,
+          direccion:profile?.direccion,
+          empresa:profile?.empresa,
+          wallet_LTC:profile?.wallet_LTC,
+          wallet_Zcash:profile?.wallet_Zcash,
+          wallet_Kadena:profile?.wallet_Kadena  
+        };
+      return res.status(200).json({ data });
+    } catch ( error) {
+      console.log(error)
+      res.status(500).json( error );
+    }
+  };
+   export const getUserByLastname = async (req: Request, res: Response) => {
+    try {
+      // @ts-ignore
+      const prisma = req.prisma as PrismaClient;
+            // @ts-ignore
+      const {last_name}= req.body;
+      const users = await prisma.user.findMany({
+        where:{last_name}
+      })
+      let data=[];
+      const profiles = await getProfiles(prisma)
+      for(let user of users) {
+        const profile= profiles.filter((x)=>{return x.user_id==user.id})
+         data.push({
+          user_id: user.id,
+          first_name: user.first_name,
+          last_name: user.last_name,
+          wallet_ETH: user.wallet_ETH,
+          email: user.email,
+          rol: user.rol,
+          kycPassed: user.kycPassed,
+          stripeId: user.stripe_id,
+          referall: user.referall,
+          wallet_BTC:profile[0]?.wallet_BTC,
+          telefono:profile[0]?.telefono,
+          direccion:profile[0]?.direccion,
+          empresa:profile[0]?.empresa,
+          wallet_LTC:profile[0]?.wallet_LTC,
+          wallet_Zcash:profile[0]?.wallet_Zcash,
+          wallet_Kadena:profile[0]?.wallet_Kadena  
+        });
+      }
+      return res.status(200).json({ data });
+    } catch ( error) {
+      console.log(error)
+      res.status(500).json( error );
+    }
+  };
+  export const getUserByFirstname = async (req: Request, res: Response) => {
+    try {
+      // @ts-ignore
+      const prisma = req.prisma as PrismaClient;
+             // @ts-ignore
+             const {first_name}= req.body;
+             const users = await prisma.user.findMany({
+               where:{first_name}
+             })
+      let data=[];
+      const profiles = await getProfiles(prisma)
+      for(let user of users) {
+        const profile= profiles.filter((x)=>{return x.user_id==user.id})
+         data.push({
+          user_id: user.id,
+          first_name: user.first_name,
+          last_name: user.last_name,
+          wallet_ETH: user.wallet_ETH,
+          email: user.email,
+          rol: user.rol,
+          kycPassed: user.kycPassed,
+          stripeId: user.stripe_id,
+          referall: user.referall,
+          wallet_BTC:profile[0]?.wallet_BTC,
+          telefono:profile[0]?.telefono,
+          direccion:profile[0]?.direccion,
+          empresa:profile[0]?.empresa,
+          wallet_LTC:profile[0]?.wallet_LTC,
+          wallet_Zcash:profile[0]?.wallet_Zcash,
+          wallet_Kadena:profile[0]?.wallet_Kadena  
+        });
+      }
+      return res.status(200).json({ data });
+    } catch ( error) {
+      console.log(error)
+      res.status(500).json( error );
+    }
+  };
+
+
+  export const getUserByTelefono = async (req: Request, res: Response) => {
+    try {
+      // @ts-ignore
+      const prisma = req.prisma as PrismaClient;
+             // @ts-ignore
+              const {telefono}= req.body;
+              const profiles = await prisma.profile.findMany({
+                where:{telefono}
+              })
+      let data=[];
+      const users = await getAllUsers(prisma)
+      for(let profile of profiles) {
+        const user= users.filter((x)=>{return x.id==profile.user_id})
+        data.push({
+          user_id: user[0].id,
+          first_name: user[0].first_name,
+          last_name: user[0].last_name,
+          wallet_ETH: user[0].wallet_ETH,
+          email: user[0].email,
+          rol: user[0].rol,
+          kycPassed: user[0].kycPassed,
+          stripeId: user[0].stripe_id,
+          referall: user[0].referall,
+          wallet_BTC:profile?.wallet_BTC,
+          telefono:profile?.telefono,
+          direccion:profile?.direccion,
+          empresa:profile?.empresa,
+          wallet_LTC:profile?.wallet_LTC,
+          wallet_Zcash:profile?.wallet_Zcash,
+          wallet_Kadena:profile?.wallet_Kadena  
+        });
+      }
+      return res.status(200).json({ data });
+    } catch ( error) {
+      console.log(error)
+      res.status(500).json( error );
+    }
+  };
+  export const getUserByEmpresa = async (req: Request, res: Response) => {
+    try {
+      // @ts-ignore
+      const prisma = req.prisma as PrismaClient;
+             // @ts-ignore
+              const {empresa}= req.body;
+              const profiles = await prisma.profile.findMany({
+                where:{empresa}
+              })
+      let data=[];
+      const users = await getAllUsers(prisma)
+      for(let profile of profiles) {
+        const user= users.filter((x)=>{return x.id==profile.user_id})
+        data.push({
+          user_id: user[0].id,
+          first_name: user[0].first_name,
+          last_name: user[0].last_name,
+          wallet_ETH: user[0].wallet_ETH,
+          email: user[0].email,
+          rol: user[0].rol,
+          kycPassed: user[0].kycPassed,
+          stripeId: user[0].stripe_id,
+          referall: user[0].referall,
+          wallet_BTC:profile?.wallet_BTC,
+          telefono:profile?.telefono,
+          direccion:profile?.direccion,
+          empresa:profile?.empresa,
+          wallet_LTC:profile?.wallet_LTC,
+          wallet_Zcash:profile?.wallet_Zcash,
+          wallet_Kadena:profile?.wallet_Kadena  
+        });
+      }
+      return res.status(200).json({ data });
+    } catch ( error) {
+      console.log(error)
+      res.status(500).json( error );
+    }
+  };
+
 export const userRegisterController = async (req: Request, res: Response) => {
   try {
     const salt = bcrypt.genSaltSync();
@@ -130,7 +365,7 @@ export const getRecoveryCode =async (req: Request, res: Response) => {
     const user = await getUserByEmail(email, prisma);
     if (user) {
       await sendAuthEmail(email, authCode);
-      await updateUser(user.id.toString(), {authToken:bcrypt.hashSync(authCode, salt)},prisma);
+      await updateUser(user.id, {authToken:bcrypt.hashSync(authCode, salt)},prisma);
       return res.status(200).json(
        {
           data: `Se ha enviado código de validación al correo: ${email}`,
@@ -155,7 +390,7 @@ export const getAuthCode = async (req: Request, res: Response) => {
     const user = await getUserByEmail(email, prisma);
     if (user && user.password && bcrypt.compareSync(password, user.password)) {
       await sendAuthEmail(email, authCode);
-      await updateUser(user.id.toString(),{authToken:bcrypt.hashSync(authCode, salt)} ,prisma);
+      await updateUser(user.id,{authToken:bcrypt.hashSync(authCode, salt)} ,prisma);
       return res.status(200).json(
        {
           data: `Se ha enviado código de validación al correo: ${email}`,
@@ -180,9 +415,12 @@ export const userEditProfile = async (req: Request, res: Response) => {
       wallet_Kadena,
       wallet_Zcash,
       empresa,
-      telefono} = req?.body;
-      await updateUserProfile(`${user.id}`,req.body,prisma)
+      telefono,
+    first_name,
+  last_name} = req?.body;
+      await updateUserProfile(user.id,req.body,prisma)
       if(wallet_BTC||wallet_Kadena||wallet_LTC||wallet_Zcash) await sendChangeWalletEmail(user.email)
+      if(first_name && last_name) await updateUser(user.id,{first_name,last_name},prisma)
       return res.status(200).json({data:req.body});
 
   } catch(error) {
@@ -200,7 +438,7 @@ export const changePasswordController = async (req: Request, res: Response) => {
       if (bcrypt.compareSync(authCode,user.authToken? user.authToken : "")) {
         const salt = bcrypt.genSaltSync();
         await updateUser(
-          user.id.toString(),
+          user.id,
           { password: bcrypt.hashSync(newPassword, salt) },
           prisma
         );
@@ -243,7 +481,7 @@ export const changeRolUser = async (req: Request, res: Response) => {
     const prisma = req.prisma as PrismaClient;
     const { user_id,rol } = req?.body;
     const updatedUser = await updateUser(
-      `${user_id}`,
+      user_id,
       {rol},
       prisma
     );

@@ -1,13 +1,22 @@
 import { PrismaClient } from "@prisma/client";
 
-export const getUserById = async (id: string, prisma: PrismaClient) => {
+export const getUserById = async (id: number, prisma: PrismaClient) => {
   return await prisma.user.findUnique({
-    where: { id: Number(id) },
+    where: { id: id },
   });
 };
 
 export const getAllUsers = async (prisma: PrismaClient) => {
   return await prisma.user.findMany({
+  });
+};
+export const getProfileByUser= async (id:number,prisma: PrismaClient) => {
+  return await prisma.profile.findUnique({
+    where:{id}
+  });
+};
+export const getProfiles= async (prisma: PrismaClient) => {
+  return await prisma.profile.findMany({
   });
 };
 
@@ -28,12 +37,12 @@ export const findReferall = async (referall: string, prisma: PrismaClient) => {
   });
 };
 export const updateUser = async (
-  id: string,
-  data: { email?: string; password?: string, rol?: string, kycPassed?: boolean, authToken?:string},
+  id: number,
+  data: { email?: string; password?: string, rol?: string, kycPassed?: boolean, authToken?:string,first_name?:string,last_name?:string},
   prisma: PrismaClient
 ) => {
   return await prisma.user.update({
-    where: { id: Number(id) },
+    where: { id: id },
     data: {
       ...data,
     },
@@ -59,10 +68,10 @@ export const updateUserWalletETHAddress = async (id:string,wallet_ETH:string,pri
     }
   )
 }
-export const updateUserProfile = async (id:string,data:{},prisma:PrismaClient)=> {
+export const updateUserProfile = async (id:number,data:{},prisma:PrismaClient)=> {
   return await prisma.profile.update(
     {
-      where: {user_id:Number(id)}, 
+      where: {user_id:id}, 
       data: {
         ...data
       }

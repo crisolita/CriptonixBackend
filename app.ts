@@ -13,6 +13,8 @@ import salesRouter from "./routes/sales";
 import kycRouter from "./routes/kyc";
 import stripeRouter from "./routes/stripe";
 import activacionRouter from "./routes/activacion";
+import facturasRouter from "./routes/facturas";
+
 
 
 
@@ -48,12 +50,14 @@ app.use("/sales", salesRouter);
 app.use("/kyc", kycRouter);
 app.use("/stripe", stripeRouter);
 app.use("/active", activacionRouter);
+app.use("/facturas", facturasRouter);
 
-schedule.scheduleJob('00 08 00 * * *', async function() {
-    // This will run every Monday at 10:30;
-    pagoProducciones()
-    console.log('hey!');
-});
+
+// schedule.scheduleJob('00 08 00 * * *', async function() {
+//     // This will run every Monday at 10:30;
+//     pagoProducciones()
+//     console.log('hey!');
+// });
 
 app.use((err:any, req:any, res:any, next:any) => {
   if (err && err.error && err.error.isJoi) {

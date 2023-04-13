@@ -161,7 +161,8 @@ export const addReward = async (req: Request, res: Response) => {
             coste_unitario:coleccion.energyCost,
             descripcion:`Pago de ${Number(ethers.utils.formatEther(coleccion.energyCost.toString()))*theReward.dates.length}$ por gasto de energia de recompensa en BTC ${theReward.amountReward}, a traves de metamask`,
             first_name:usuario?.first_name,
-            last_name:usuario?.last_name
+            last_name:usuario?.last_name,
+            tipo:"FEE"
           }
         })
         await prisma.bills.update({
@@ -196,7 +197,8 @@ export const addReward = async (req: Request, res: Response) => {
             coste_unitario:coleccion.energyCost,
             descripcion:`Pago de ${Number(ethers.utils.formatEther(coleccion.energyCost.toString()))*theReward.dates.length}$ por gasto de energia de recompensa en BTC ${theReward.amountReward}, a traves de tarjeta`,
             first_name:usuario?.first_name,
-            last_name:usuario?.last_name
+            last_name:usuario?.last_name,
+            tipo:"FEE"
           }
         })
         await prisma.bills.update({
@@ -245,7 +247,8 @@ export const addReward = async (req: Request, res: Response) => {
             coste_unitario:coleccion.energyCost,
             descripcion:`Pago de ${Number(ethers.utils.formatEther(coleccion.energyCost.toString()))*theReward.dates.length} deducido de la recompensa en BTC por gasto de energia de recompensa en BTC ${theReward.amountReward}`,
             first_name:usuario?.first_name,
-            last_name:usuario?.last_name
+            last_name:usuario?.last_name,
+            tipo:"FEE"
           }
         })
         await sendPagoProduccionEmail(user.email)

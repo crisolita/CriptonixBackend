@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { stat } from "fs";
 import { getVerifiedCustomer } from "../service/kyc";
 import { sendKycPassed } from "../service/mail";
-import { getUserByEmail, getUserById, updateUser } from "../service/user";
+import { getUserById, updateUser } from "../service/user";
 
 export const updateKyc = async (req: Request, res: Response) => {
     try {

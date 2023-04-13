@@ -108,7 +108,8 @@ export const changeActive = async (req: Request, res: Response) => {
             coste_unitario:amountUSDTtoPay,
             descripcion:`Pago de ${amount}$ por NFT ${nft_id} desactivado, traves de metamask`,
             first_name:usuario?.first_name,
-            last_name:usuario?.last_name
+            last_name:usuario?.last_name,
+            tipo:"DESACTIVACION"
           }
         })
         await prisma.notificaciones.create({
@@ -132,7 +133,8 @@ export const changeActive = async (req: Request, res: Response) => {
             coste_unitario:amountUSDTtoPay,
             descripcion:`Pago de ${amountUSDTtoPay}$ por NFT ${nft_id} desactivado, traves de tarjeta`,
             first_name:usuario?.first_name,
-            last_name:usuario?.last_name
+            last_name:usuario?.last_name,
+            tipo:"DESACTIVACION"
           }
         })
         const updated= await prisma.nftsDesactive.update({
