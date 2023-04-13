@@ -8,10 +8,11 @@ import { priceFeed } from '../utils/const';
 
 // @ts-ignore
 const prisma = new PrismaClient()
-async function pagoProducciones() {
+export async function pagoProducciones() {
     const bills = await prisma.bills.findMany();
     const onlyDebts= bills.filter((x)=>{return !x.feePaid})
     const now= new Date()
+    console.log("epale")
     for (let x of onlyDebts) {
       let then= new Date(x.creationDate)
       let top=new Date((new Date()).setDate(then.getDate()+10))
@@ -52,6 +53,7 @@ async function pagoProducciones() {
     }
   }
   async function NFTisDEAD() {
+    console.log("hola2veces")
     const users= await getAllUsers(prisma);
     const now =Math.trunc((new Date()).getTime()/1000)
     for (let x of users) {
@@ -76,5 +78,5 @@ async function pagoProducciones() {
   }
 
 console.log("hola")
-// pagoProducciones()
+pagoProducciones()
 NFTisDEAD()

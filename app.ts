@@ -1,6 +1,7 @@
 import express, { Express, NextFunction, Request, Response } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+import schedule from 'node-schedule'
 // import morgan from "morgan";
 import { PrismaClient } from "@prisma/client";
 
@@ -20,6 +21,7 @@ import activacionRouter from "./routes/activacion";
 
 
 import bodyParser from "body-parser";
+import { pagoProducciones } from "./scripts/atemp";
 
 dotenv.config();
 
@@ -47,7 +49,11 @@ app.use("/kyc", kycRouter);
 app.use("/stripe", stripeRouter);
 app.use("/active", activacionRouter);
 
-
+schedule.scheduleJob('00 08 00 * * *', async function() {
+    // This will run every Monday at 10:30;
+    pagoProducciones()
+    console.log('hey!');
+});
 
 app.use((err:any, req:any, res:any, next:any) => {
   if (err && err.error && err.error.isJoi) {

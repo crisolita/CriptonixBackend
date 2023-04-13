@@ -34,7 +34,9 @@ const compareStrings = (str1: string, str2: string) =>
           wallet_ETH: user.wallet_ETH,
           email: user.email,
           rol: user.rol,
-          kycPassed:user.kycPassed
+          kycPassed:user.kycPassed,
+          stripeId:user.stripe_id,
+          referall:user.referall
         };
       });
       return res.status(200).json({ data:data });
