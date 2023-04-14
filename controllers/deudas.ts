@@ -19,7 +19,7 @@ import { Request, Response } from "express";
     try {
       // @ts-ignore
       const prisma = req.prisma as PrismaClient;
-      const {user_id}= req.body
+      const {user_id}= req.query
       const result= await prisma.deudas.findMany({
         where:{user_id:Number(user_id)}
       });
@@ -35,7 +35,7 @@ import { Request, Response } from "express";
     try {
       // @ts-ignore
       const prisma = req.prisma as PrismaClient;
-      const {user_id}= req.body
+      const {user_id}= req.query
       const result= await prisma.deudas.findMany({
         where:{user_id:Number(user_id),feePaid:false}
       });
@@ -51,7 +51,7 @@ import { Request, Response } from "express";
     try {
       // @ts-ignore
       const prisma = req.prisma as PrismaClient;
-      const {user_id}= req.body
+      const {user_id}= req.query
       const result= await prisma.deudas.findMany({
         where:{user_id:Number(user_id),feePaid:true}
       });
@@ -67,7 +67,7 @@ import { Request, Response } from "express";
     try {
       // @ts-ignore
       const prisma = req.prisma as PrismaClient;
-      const {user_id}= req.body
+      const {user_id}= req.query
       const result= await prisma.deudas.findMany({
         where:{user_id:Number(user_id),rewardPaid:false}
       });
@@ -83,7 +83,7 @@ import { Request, Response } from "express";
     try {
       // @ts-ignore
       const prisma = req.prisma as PrismaClient;
-      const {user_id}= req.body
+      const {user_id}= req.query
       const result= await prisma.deudas.findMany({
         where:{user_id:Number(user_id),rewardPaid:true}
       });

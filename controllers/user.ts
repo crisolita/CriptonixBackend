@@ -63,34 +63,34 @@ const compareStrings = (str1: string, str2: string) =>
       // @ts-ignore
       const prisma = req.prisma as PrismaClient;
       // @ts-ignore
-      const {param,body}= req.body;
+      const {param,body}= req.query;
       let data=[],users,profiles;
       switch (param) {
           case "email":
             console.log(body)
            users= await prisma.user.findMany({
-            where:{email:body}
+            where:{email:`${body}`}
           })
           console.log(users)
           break;
           case "first_name":
           users= await prisma.user.findMany({
-              where:{first_name:body}
+              where:{first_name:`${body}`}
             })
             break;
           case "last_name":
             users= await prisma.user.findMany({
-              where:{last_name:body}
+              where:{last_name:`${body}`}
             })
             break;
           case "id":
             users= await prisma.user.findMany({
-              where:{id:Number(body)}
+              where:{id:Number(`${body}`)}
             })
             break;
             case "telefono":
             profiles= await prisma.profile.findMany({
-              where:{telefono:body}
+              where:{telefono:`${body}`}
             })
             for (let profile of profiles) {
               const user= await getUserById(profile.user_id,prisma)
@@ -116,7 +116,7 @@ const compareStrings = (str1: string, str2: string) =>
             return res.status(200).json({ data });
             case "empresa":
             profiles= await prisma.profile.findMany({
-              where:{empresa:body}
+              where:{empresa:`${body}`}
             })
             for (let profile of profiles) {
               const user= await getUserById(profile.user_id,prisma)

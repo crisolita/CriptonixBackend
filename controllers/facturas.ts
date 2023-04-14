@@ -19,7 +19,7 @@ import { Request, Response } from "express";
     try {
       // @ts-ignore
       const prisma = req.prisma as PrismaClient;
-      const {user_id}= req.body
+      const {user_id}= req.query
       const result= await prisma.facturas.findMany({
         where:{user_id:Number(user_id)}
       });
@@ -35,7 +35,7 @@ import { Request, Response } from "express";
     try {
       // @ts-ignore
       const prisma = req.prisma as PrismaClient;
-      const {param}= req.body
+      const {param}= req.query
       const result= await prisma.facturas.findMany({
         where:{tipo:param}
       });
@@ -54,7 +54,7 @@ import { Request, Response } from "express";
       const prisma = req.prisma as PrismaClient;
         // @ts-ignore
     const user = req.user as User;
-    const {param} = req.body
+    const {param} = req.query
       const result= await prisma.facturas.findMany({
         where:{tipo:param,user_id:user.id}
       });
@@ -73,7 +73,7 @@ import { Request, Response } from "express";
       const prisma = req.prisma as PrismaClient;
         // @ts-ignore
     const user = req.user as User;
-    const {id}= req.body
+    const {id}= req.query
       const result= await prisma.facturas.findUnique({
         where:{id:Number(id)}
       });
