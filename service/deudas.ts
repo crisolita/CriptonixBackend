@@ -45,7 +45,7 @@ export const getUserByCollection = async (collectionId: string, prisma: PrismaCl
  return (await prisma.rewards.findMany())
 };
 export const getBillByUser=  async (rewardID:number,user_id:number,prisma: PrismaClient) => {
-  return (await prisma.bills.findFirst({
+  return (await prisma.deudas.findFirst({
     where: {reward_id:rewardID,user_id:user_id}
   }))
  };

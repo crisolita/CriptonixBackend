@@ -9,12 +9,7 @@ import {
   getRecoveryCode,
   changeRolUser,
   getAllUsersController,
-  getUserByLastname,
-  getUserByFirstname,
-  getUserByEmpresa,
-  getuserById,
-  getUserByemail,
-  getUserByTelefono,
+  getUserByParam,
 } from "../controllers/user";
 import Joivalidator from "express-joi-validation";
 import { querySchemaRegistro, querySchemaUGetAuth } from "../middleware/validation";
@@ -41,12 +36,8 @@ router.post("/getAuth",validator.body(querySchemaUGetAuth),getAuthCode)
 router.post("/changeRol",isAdmin, changeRolUser)
 router.get("/getAll",isAdmin, getAllUsersController)
 
-router.get("/getUserByLastname",isAdmin, getUserByLastname)
-router.get("/getUserByFirstname",isAdmin, getUserByFirstname)
-router.get("/getUserByEmpresa",isAdmin, getUserByEmpresa)
-router.get("/getUserById",isAdmin, getuserById)
-router.get("/getUserByEmail",isAdmin, getUserByemail)
-router.get("/getUserByTelefono",isAdmin, getUserByTelefono)
+router.get("/getUserByParam",isAdmin, getUserByParam)
+
 
 
 

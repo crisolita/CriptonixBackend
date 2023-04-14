@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 
 
 /////////// obtener todas las bills  /////
-  export const getAllBills = async (req: Request, res: Response) => {
+  export const getAllDeudas = async (req: Request, res: Response) => {
     try {
       // @ts-ignore
       const prisma = req.prisma as PrismaClient;
@@ -15,7 +15,7 @@ import { Request, Response } from "express";
     console.log(error)
     res.status(500).json({ error:error });
   }}
-  export const getBillsByUser = async (req: Request, res: Response) => {
+  export const getDeudasByUser = async (req: Request, res: Response) => {
     try {
       // @ts-ignore
       const prisma = req.prisma as PrismaClient;

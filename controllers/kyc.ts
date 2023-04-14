@@ -33,7 +33,7 @@ export const updateKyc = async (req: Request, res: Response) => {
       const kycPassed= usuario?.kycPassed
       const auth= usuario?.auth_uuid
       if (kycPassed===true) res.status(200).json({data:kycPassed})
-      if(!auth) res.status(200).json({data:false})
+      if(!auth) return  res.status(200).json({data:false})
       const status= await getVerifiedCustomer(user.id,prisma)
       if (status && usuario?.email) {
         await updateUser(user.id,{kycPassed:true},prisma)

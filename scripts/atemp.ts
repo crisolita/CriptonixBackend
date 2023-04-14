@@ -1,6 +1,6 @@
 import {PrismaClient} from '@prisma/client';
 import { ethers } from 'ethers';
-import { payBTC } from '../service/bills';
+import { payBTC } from '../service/deudas';
 import { sendInfoEmail, sendNFTDeadEmail, sendPagoProduccionEmail, sendPending } from '../service/mail';
 import { getAllUsers, getWalletBTCByUser } from '../service/user';
 import contract from '../service/web3';

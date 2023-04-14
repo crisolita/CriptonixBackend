@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import { Request, Response } from "express";
 import { number } from "joi";
-import { getBillByUser, getUserByCollection, paidFeeWithUSDT, payBTC } from "../service/bills";
+import { getBillByUser, getUserByCollection, paidFeeWithUSDT, payBTC } from "../service/deudas";
 import { sendBillEmail, sendNewColeccionEmail, sendPagoProduccionEmail } from "../service/mail";
 import { chargeStripe, payFeeWithStripe } from "../service/stripe";
 import { getAllUsers, getUserByEmail, getUserById, getWalletBTCByUser } from "../service/user";

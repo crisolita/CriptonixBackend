@@ -31,12 +31,13 @@ import { Request, Response } from "express";
     console.log(error)
     res.status(500).json({error: error });
   }}
-  export const getFeeFacturas = async (req: Request, res: Response) => {
+  export const getParamFacturas = async (req: Request, res: Response) => {
     try {
       // @ts-ignore
       const prisma = req.prisma as PrismaClient;
+      const {param}= req.body
       const result= await prisma.facturas.findMany({
-        where:{tipo:"FEE"}
+        where:{tipo:param}
       });
       res.status(200).json(
     { data: result}
@@ -46,44 +47,16 @@ import { Request, Response } from "express";
     console.log(error)
     res.status(500).json({error: error });
   }}
-  export const getCompraFacturas = async (req: Request, res: Response) => {
-    try {
-      // @ts-ignore
-      const prisma = req.prisma as PrismaClient;
-      const result= await prisma.facturas.findMany({
-        where:{tipo:"COMPRA"}
-      });
-      res.status(200).json(
-    { data: result}
-      );
-    }
-  catch (error) {
-    console.log(error)
-    res.status(500).json({error: error });
-  }}
-  export const getDesactivarFacturas = async (req: Request, res: Response) => {
-    try {
-      // @ts-ignore
-      const prisma = req.prisma as PrismaClient;
-      const result= await prisma.facturas.findMany({
-        where:{tipo:"DESACTIVACION"}
-      });
-      res.status(200).json(
-    { data: result}
-      );
-    }
-  catch (error) {
-    console.log(error)
-    res.status(500).json({error: error });
-  }}
-  export const getFeeFacturasUser = async (req: Request, res: Response) => {
+
+  export const getParamFacturasUser = async (req: Request, res: Response) => {
     try {
       // @ts-ignore
       const prisma = req.prisma as PrismaClient;
         // @ts-ignore
     const user = req.user as User;
+    const {param} = req.body
       const result= await prisma.facturas.findMany({
-        where:{tipo:"FEE",user_id:user.id}
+        where:{tipo:param,user_id:user.id}
       });
       res.status(200).json(
     { data: result}
@@ -93,40 +66,7 @@ import { Request, Response } from "express";
     console.log(error)
     res.status(500).json({error: error });
   }}
-  export const getCompraFacturasUser = async (req: Request, res: Response) => {
-    try {
-      // @ts-ignore
-      const prisma = req.prisma as PrismaClient;
-        // @ts-ignore
-    const user = req.user as User;
-      const result= await prisma.facturas.findMany({
-        where:{tipo:"COMPRA",user_id:user.id}
-      });
-      res.status(200).json(
-    { data: result}
-      );
-    }
-  catch (error) {
-    console.log(error)
-    res.status(500).json({error: error });
-  }}
-  export const getDesactivarFacturasUser = async (req: Request, res: Response) => {
-    try {
-      // @ts-ignore
-      const prisma = req.prisma as PrismaClient;
-        // @ts-ignore
-    const user = req.user as User;
-      const result= await prisma.facturas.findMany({
-        where:{tipo:"DESACTIVACION",user_id:user.id}
-      });
-      res.status(200).json(
-    { data: result}
-      );
-    }
-  catch (error) {
-    console.log(error)
-    res.status(500).json({error: error });
-  }}
+
   export const getUnaFactura = async (req: Request, res: Response) => {
     try {
       // @ts-ignore

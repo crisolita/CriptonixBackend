@@ -10,7 +10,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Bills {
+model Deudas {
   id           Int      @id @default(autoincrement())
   user_id      Int
   reward_id    Int
@@ -56,7 +56,7 @@ model Rewards {
   feeEnergy       Float?
   ratioSuccess    String?
   totalRecompensa Float?
-  Bills           Bills[]
+  Deudas           Deudas[]
 }
 
 model User {
@@ -74,7 +74,7 @@ model User {
   referall       String           @unique
   referallBy     String?
   kycPassed      Boolean?
-  Bills          Bills[]
+  Deudas          Deudas[]
   Profile        Profile?
   Empresa        Empresa?
   nftsdead       nftsdead[]

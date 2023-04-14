@@ -7,16 +7,13 @@ import { PrismaClient } from "@prisma/client";
 
 import userRouter from "./routes/user";
 import recompensaRouter from "./routes/recompensas";
-import billsRouter from "./routes/bills";
+import deudasRouter from "./routes/deudas";
 import mailRouter from "./routes/mail";
 import salesRouter from "./routes/sales";
 import kycRouter from "./routes/kyc";
 import stripeRouter from "./routes/stripe";
 import activacionRouter from "./routes/activacion";
 import facturasRouter from "./routes/facturas";
-
-
-
 
 
 
@@ -44,7 +41,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use("/user", userRouter);
 app.use("/recompensas", recompensaRouter);
-app.use("/bills", billsRouter);
+app.use("/deudas", deudasRouter);
 app.use("/mail", mailRouter);
 app.use("/sales", salesRouter);
 app.use("/kyc", kycRouter);
