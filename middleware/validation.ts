@@ -44,7 +44,8 @@ export const querySchemaBuyNftStripe = Joi.object({
   amount:Joi.number().required(),
 });
 export const querySchemaBuyNftMetamask= Joi.object({
-  collectionID: Joi.number().required()
+  collectionID: Joi.number().required(),
+  cantidad:Joi.number().required()
 });
 export const querySchemaUpdateKYC= Joi.object({
   auth_uuid: Joi.string().required()
