@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
 
-/////////// obtener todas las bills  /////
+/////////// obtener todas las deudas  /////
   export const getAllFacturas = async (req: Request, res: Response) => {
     try {
       // @ts-ignore

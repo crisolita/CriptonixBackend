@@ -67,9 +67,11 @@ const compareStrings = (str1: string, str2: string) =>
       let data=[],users,profiles;
       switch (param) {
           case "email":
+            console.log(body)
            users= await prisma.user.findMany({
             where:{email:body}
           })
+          console.log(users)
           break;
           case "first_name":
           users= await prisma.user.findMany({
@@ -83,7 +85,7 @@ const compareStrings = (str1: string, str2: string) =>
             break;
           case "id":
             users= await prisma.user.findMany({
-              where:{id:body}
+              where:{id:Number(body)}
             })
             break;
             case "telefono":

@@ -34,6 +34,7 @@ export const changeActive = async (req: Request, res: Response) => {
             tipo:"Activacion",
             titulo:"NF-Tonix activado",
             fecha:new Date().toDateString(),
+            data:`${nft_id}`,
             descripcion:``,
             user_id:user.id
           }
@@ -57,6 +58,7 @@ export const changeActive = async (req: Request, res: Response) => {
             tipo:"Desactivacion",
             titulo:"NF-Tonix desactivado",
             fecha:new Date().toDateString(),
+            data: `${nft_id}`,
             descripcion:`Costo por desactivacion diario ${dayCost}`,
             user_id:user.id
           }
@@ -117,6 +119,7 @@ export const changeActive = async (req: Request, res: Response) => {
             tipo:"Pago procesado",
             titulo:"Pago de costo de desactivacion exitoso",
             fecha:new Date().toDateString(),
+            data:`${nft_id}`,
             descripcion:`${amountUSDTtoPay} USD`,
             user_id:user.id
           }
@@ -146,6 +149,7 @@ export const changeActive = async (req: Request, res: Response) => {
             tipo:"Pago procesado",
             titulo:"Pago de costo de desactivacion exitoso",
             fecha:new Date().toDateString(),
+            data:`${nft_id}`,
             descripcion:`${amountUSDTtoPay} USD`,
             user_id:user.id
           }

@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 
 
-/////////// obtener todas las bills  /////
+/////////// obtener todas las deudas  /////
   export const getAllDeudas = async (req: Request, res: Response) => {
     try {
       // @ts-ignore
       const prisma = req.prisma as PrismaClient;
-      const result= await prisma.bills.findMany();
+      const result= await prisma.deudas.findMany();
       res.status(200).json(
       { data: result}
       );
@@ -20,7 +20,7 @@ import { Request, Response } from "express";
       // @ts-ignore
       const prisma = req.prisma as PrismaClient;
       const {user_id}= req.body
-      const result= await prisma.bills.findMany({
+      const result= await prisma.deudas.findMany({
         where:{user_id:Number(user_id)}
       });
       res.status(200).json(
@@ -36,7 +36,7 @@ import { Request, Response } from "express";
       // @ts-ignore
       const prisma = req.prisma as PrismaClient;
       const {user_id}= req.body
-      const result= await prisma.bills.findMany({
+      const result= await prisma.deudas.findMany({
         where:{user_id:Number(user_id),feePaid:false}
       });
       res.status(200).json(
@@ -52,7 +52,7 @@ import { Request, Response } from "express";
       // @ts-ignore
       const prisma = req.prisma as PrismaClient;
       const {user_id}= req.body
-      const result= await prisma.bills.findMany({
+      const result= await prisma.deudas.findMany({
         where:{user_id:Number(user_id),feePaid:true}
       });
       res.status(200).json(
@@ -68,7 +68,7 @@ import { Request, Response } from "express";
       // @ts-ignore
       const prisma = req.prisma as PrismaClient;
       const {user_id}= req.body
-      const result= await prisma.bills.findMany({
+      const result= await prisma.deudas.findMany({
         where:{user_id:Number(user_id),rewardPaid:false}
       });
       res.status(200).json(
@@ -84,7 +84,7 @@ import { Request, Response } from "express";
       // @ts-ignore
       const prisma = req.prisma as PrismaClient;
       const {user_id}= req.body
-      const result= await prisma.bills.findMany({
+      const result= await prisma.deudas.findMany({
         where:{user_id:Number(user_id),rewardPaid:true}
       });
       res.status(200).json(

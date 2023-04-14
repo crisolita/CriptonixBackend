@@ -118,6 +118,7 @@ model notificaciones {
   fecha       String
   titulo      String
   tipo        String
+  data        String?
   descripcion String?
   User        User    @relation(fields: [user_id], references: [id])
 }

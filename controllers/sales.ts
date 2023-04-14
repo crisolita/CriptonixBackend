@@ -41,6 +41,7 @@ export const buyNftByStripe = async (req: Request, res: Response) => {
           titulo:"Compra confirmada",
           fecha:new Date().toDateString(),
           descripcion:`Tienes disponible un NF-Tonix de la coleccion ${name.description}`,
+          data:`${collectionID}`,
           user_id:user.id
         }
       })
@@ -78,6 +79,7 @@ export const buyNftByStripe = async (req: Request, res: Response) => {
           titulo:"Compra confirmada",
           fecha:new Date().toDateString(),
           descripcion:`Tienes disponible un NF-Tonix de la coleccion ${name.description}`,
+          data:`${collectionID}`,
           user_id:user.id
         }
       })

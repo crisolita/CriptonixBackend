@@ -3,8 +3,8 @@ import { Request, Response } from "express";
 import { number } from "joi";
 import { getBillByUser, getUserByCollection, paidFeeWithUSDT, payBTC } from "../service/deudas";
 import { sendBillEmail, sendNewColeccionEmail, sendPagoProduccionEmail } from "../service/mail";
-import { chargeStripe, payFeeWithStripe } from "../service/stripe";
-import { getAllUsers, getUserByEmail, getUserById, getWalletBTCByUser } from "../service/user";
+import {  payFeeWithStripe } from "../service/stripe";
+import {  getUserByEmail, getUserById, getWalletBTCByUser } from "../service/user";
 import contract from "../service/web3";
 import { priceFeed } from "../utils/const";
 ///// ////////////////////////////////////////// AGREGAR RECOMPENSAS //////////////////////////////////////////////////
@@ -44,7 +44,7 @@ export const addReward = async (req: Request, res: Response) => {
         const list=await getUserByCollection(reward[0].IDCOLECCION,prisma)
         const numberOfNft= await contract.getNFTByColleccion(newReward.collectionID);
         for(let x of list) {
-          const bill=await prisma.bills.create({
+          const bill=await prisma.deudas.create({
             data:{
               user_id:x.id,
               reward_id:newReward.rewardID,
@@ -60,6 +60,7 @@ export const addReward = async (req: Request, res: Response) => {
               tipo:"Liquidacion disponible",
               titulo:"Liquidacion semanal",
               fecha:new Date().toDateString(),
+              data:`${bill.id}`,
               descripcion:`Tienes disponible ${newReward.totalRecompensa/numberOfNft.length} BTC`,
               user_id:x.id
             }
@@ -165,7 +166,7 @@ export const addReward = async (req: Request, res: Response) => {
             tipo:"FEE"
           }
         })
-        await prisma.bills.update({
+        await prisma.deudas.update({
           where: { id: Number(bill.id) },
           data: {
             feePaid:true,
@@ -179,6 +180,7 @@ export const addReward = async (req: Request, res: Response) => {
             titulo:"Pago de costo de energia exitoso",
             fecha:new Date().toDateString(),
             descripcion:`Tienes disponible ${bill.amountReward} BTC`,
+            data:`${bill.id}`,
             user_id:user.id
           }
         })
@@ -201,7 +203,7 @@ export const addReward = async (req: Request, res: Response) => {
             tipo:"FEE"
           }
         })
-        await prisma.bills.update({
+        await prisma.deudas.update({
           where: { id: Number(bill.id) },
           data: {
             feePaid:true,
@@ -214,6 +216,7 @@ export const addReward = async (req: Request, res: Response) => {
             titulo:"Pago de costo de energia exitoso",
             fecha:new Date().toDateString(),
             descripcion:`Tienes disponible ${bill.amountReward} BTC`,
+            data:`${bill.id}`,
             user_id:user.id
           }
         })
@@ -231,7 +234,7 @@ export const addReward = async (req: Request, res: Response) => {
           const payBtc=await payBTC(wallet_BTC,newAmount)
           if(!payBtc) return res.status(500).json({error: "The btc payment failed"})
         //  / cambiar la bd 
-            await prisma.bills.update({
+            await prisma.deudas.update({
           where: { id: Number(bill.id) },
           data: {
             feePaid:true,
@@ -258,6 +261,7 @@ export const addReward = async (req: Request, res: Response) => {
             titulo:"Pago de costo de energia exitoso",
             fecha:new Date().toDateString(),
             descripcion:`Tienes disponible ${newAmount} BTC`,
+            data:`${bill.id}`,
             user_id:user.id
           }
         })

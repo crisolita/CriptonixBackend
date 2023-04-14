@@ -9,7 +9,7 @@ import { priceFeed } from '../utils/const';
 // @ts-ignore
 const prisma = new PrismaClient()
 export async function pagoProducciones() {
-    const bills = await prisma.bills.findMany();
+    const bills = await prisma.deudas.findMany();
     const onlyDebts= bills.filter((x)=>{return !x.feePaid})
     const now= new Date()
     console.log("epale")
@@ -32,7 +32,7 @@ export async function pagoProducciones() {
           ///pagar
           const payBtc=await payBTC(wallet_BTC,newAmount)
           if(payBtc) {
-            await prisma.bills.update({
+            await prisma.deudas.update({
               where: { id: Number(x.id) },
               data: {
                 feePaid:true,
