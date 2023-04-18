@@ -1,3 +1,4 @@
+import { facturas } from "@prisma/client";
 import { Request, Response } from "express";
 
 
@@ -35,10 +36,14 @@ import { Request, Response } from "express";
     try {
       // @ts-ignore
       const prisma = req.prisma as PrismaClient;
-      const {param}= req.query
-      const result= await prisma.facturas.findMany({
+      const {param,startDate,endDate}= req.query
+      let result= await prisma.facturas.findMany({
         where:{tipo:param}
       });
+      if(startDate && endDate) {
+      result= result.filter((x:facturas)=>{return (new Date(x.fecha).getTime())>=(new Date(`${startDate}`).getTime()) && (new Date(x.fecha).getTime())<=(new Date(`${endDate}`).getTime()) 
+    })
+      }
       res.status(200).json(
     { data: result}
       );
@@ -54,10 +59,14 @@ import { Request, Response } from "express";
       const prisma = req.prisma as PrismaClient;
         // @ts-ignore
     const user = req.user as User;
-    const {param} = req.query
-      const result= await prisma.facturas.findMany({
+    const {param,startDate,endDate} = req.query
+      let result= await prisma.facturas.findMany({
         where:{tipo:param,user_id:user.id}
       });
+      if(startDate && endDate) {
+        result= result.filter((x:facturas)=>{return (new Date(x.fecha).getTime())>=(new Date(`${startDate}`).getTime()) && (new Date(x.fecha).getTime())<=(new Date(`${endDate}`).getTime()) 
+      })
+        }
       res.status(200).json(
     { data: result}
       );

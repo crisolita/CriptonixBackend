@@ -14,6 +14,8 @@ import kycRouter from "./routes/kyc";
 import stripeRouter from "./routes/stripe";
 import activacionRouter from "./routes/activacion";
 import facturasRouter from "./routes/facturas";
+import notificacionesRouter from "./routes/notificaciones";
+
 
 
 
@@ -48,6 +50,8 @@ app.use("/kyc", kycRouter);
 app.use("/stripe", stripeRouter);
 app.use("/active", activacionRouter);
 app.use("/facturas", facturasRouter);
+app.use("/notificaciones", notificacionesRouter);
+
 
 
 // schedule.scheduleJob('00 08 00 * * *', async function() {
