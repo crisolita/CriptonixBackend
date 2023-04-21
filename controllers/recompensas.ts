@@ -180,7 +180,7 @@ export const addReward = async (req: Request, res: Response) => {
             titulo:"Pago de costo de energia exitoso",
             fecha:new Date().toDateString(),
             descripcion:`Tienes disponible ${bill.amountReward} BTC`,
-            data:`${bill.id}`,
+            data:`${rewardID}`,
             user_id:user.id
           }
         })
