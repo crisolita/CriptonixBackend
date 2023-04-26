@@ -69,4 +69,38 @@ import { Request, Response } from "express";
     console.log(error)
     res.status(500).json({ error:error });
   }}
+     /////////// Crear notificaciones by Admin  /////
+
+     export const createNofitifcaciones = async (req: Request, res: Response) => {
+      try {
+        // @ts-ignore
+        const prisma = req.prisma as PrismaClient;
+        // @ts-ignore
+      const user = req.user as User;
+      const {fecha,titulo,tipo,descripcion,data,users} = req.body;
+    
+      for (let user of users) {
+        const notificacion= await prisma.notificaciones.create(
+        {
+          data:{
+            fecha:fecha,
+            tipo:tipo,
+            titulo:titulo,
+            descripcion:descripcion,
+            data:data,
+            user_id:user
+          }
+        }
+        );
+  
+      }
+       
+        res.status(200).json(
+        { data:{users:users}}
+        );
+      }
+    catch (error) {
+      console.log(error)
+      res.status(500).json({ error:error });
+    }}
 

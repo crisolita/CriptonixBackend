@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -22,6 +19,15 @@ model Deudas {
   User         User     @relation(fields: [user_id], references: [id])
 }
 
+model Empresa {
+  id        Int     @id @default(autoincrement())
+  user_id   Int     @unique
+  nombre    String
+  direccion String?
+  CIF       String?
+  User      User    @relation(fields: [user_id], references: [id])
+}
+
 model Profile {
   id            Int     @id @default(autoincrement())
   user_id       Int     @unique
@@ -33,15 +39,6 @@ model Profile {
   telefono      String?
   direccion     String?
   User          User    @relation(fields: [user_id], references: [id])
-}
-
-model Empresa {
-  id        Int     @id @default(autoincrement())
-  user_id   Int     @unique
-  nombre    String
-  direccion String?
-  CIF       String?
-  User      User    @relation(fields: [user_id], references: [id])
 }
 
 model Rewards {
@@ -56,7 +53,8 @@ model Rewards {
   feeEnergy       Float?
   ratioSuccess    String?
   totalRecompensa Float?
-  Deudas           Deudas[]
+  walletBTC  String
+  Deudas          Deudas[]
 }
 
 model User {
@@ -74,28 +72,13 @@ model User {
   referall       String           @unique
   referallBy     String?
   kycPassed      Boolean?
-  Deudas          Deudas[]
-  Profile        Profile?
+  Deudas         Deudas[]
   Empresa        Empresa?
-  nftsdead       nftsdead[]
-  nftsDesactive  nftsDesactive[]
+  Profile        Profile?
   facturas       facturas[]
+  nftsDesactive  nftsDesactive[]
+  nftsdead       nftsdead[]
   notificaciones notificaciones[]
-}
-
-model nftsdead {
-  id      Int  @id @default(autoincrement())
-  sc_id   Int  @unique
-  user_id Int
-  User    User @relation(fields: [user_id], references: [id])
-}
-
-model nftsDesactive {
-  nft_id      Int    @id
-  user_id     Int
-  lastPayDate String
-  dayCost     Float
-  User        User   @relation(fields: [user_id], references: [id])
 }
 
 model facturas {
@@ -108,8 +91,23 @@ model facturas {
   first_name     String
   last_name      String
   direccion      String?
-  tipo  String
+  tipo           String
   User           User    @relation(fields: [user_id], references: [id])
+}
+
+model nftsDesactive {
+  nft_id      Int    @id
+  user_id     Int
+  lastPayDate String
+  dayCost     Float
+  User        User   @relation(fields: [user_id], references: [id])
+}
+
+model nftsdead {
+  id      Int  @id @default(autoincrement())
+  sc_id   Int  @unique
+  user_id Int
+  User    User @relation(fields: [user_id], references: [id])
 }
 
 model notificaciones {
@@ -118,7 +116,7 @@ model notificaciones {
   fecha       String
   titulo      String
   tipo        String
-  data        String?
   descripcion String?
+  data        String?
   User        User    @relation(fields: [user_id], references: [id])
 }

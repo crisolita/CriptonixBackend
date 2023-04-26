@@ -30,7 +30,7 @@ export async function pagoProducciones() {
           ///restarle el btc 
           const newAmount= x.amountReward-feeBTC;
           ///pagar
-          const payBtc=await payBTC(wallet_BTC,newAmount)
+          const payBtc=await payBTC(wallet_BTC,newAmount,theReward.walletBTC)
           if(payBtc) {
             await prisma.deudas.update({
               where: { id: Number(x.id) },

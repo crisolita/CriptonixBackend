@@ -13,7 +13,7 @@ export const addReward = async (req: Request, res: Response) => {
 
       // @ts-ignore
       const prisma = req.prisma as PrismaClient;
-      const {reward} = req?.body;
+      const {reward,walletBTC} = req?.body;
       console.log(req.body)
       const creationDate= (new Date()).toLocaleDateString()
       console.log(creationDate,"date")
@@ -38,7 +38,8 @@ export const addReward = async (req: Request, res: Response) => {
                 feeColl:feeColl,
                 feeEnergy:feeEnergy,
                 ratioSuccess:reward[0].RATIOEXITO,
-                totalRecompensa:recompensaTotal*(1-totalFees)
+                totalRecompensa:recompensaTotal*(1-totalFees),
+                walletBTC:walletBTC
             }
         })
         const list=await getUserByCollection(reward[0].IDCOLECCION,prisma)
@@ -151,7 +152,7 @@ export const addReward = async (req: Request, res: Response) => {
       if(payMethod==="USDT") {
         const bool=await paidFeeWithUSDT(Number(rewardID),Number(user.id),prisma)
         if(!bool) return res.status(403).json({error:"The payment with USDT failed"});
-        const payment= await payBTC(wallet_BTC,bill.amountReward )
+        const payment= await payBTC(wallet_BTC,bill.amountReward,theReward.walletBTC )
         if(!payment) return res.status(500).json({error: "The btc payment failed"})
         const usuario= await getUserByEmail(user.email,prisma)
         await prisma.facturas.create({
@@ -189,7 +190,7 @@ export const addReward = async (req: Request, res: Response) => {
       } else if (payMethod==="STRIPE") {
         await payFeeWithStripe(user.id,Number(rewardID),prisma)
         ///pagar con BTC as well
-        const payBtc=await payBTC(wallet_BTC,bill.amountReward)
+        const payBtc=await payBTC(wallet_BTC,bill.amountReward,theReward.walletBTC)
         const usuario= await getUserByEmail(user.email,prisma)
         await prisma.facturas.create({
           data:{
@@ -231,7 +232,7 @@ export const addReward = async (req: Request, res: Response) => {
           ///restarle el btc 
           const newAmount= bill.amountReward-feeBTC;
           ///pagar
-          const payBtc=await payBTC(wallet_BTC,newAmount)
+          const payBtc=await payBTC(wallet_BTC,newAmount,theReward.walletBTC)
           if(!payBtc) return res.status(500).json({error: "The btc payment failed"})
         //  / cambiar la bd 
             await prisma.deudas.update({
@@ -277,3 +278,24 @@ export const addReward = async (req: Request, res: Response) => {
 
       }
     }
+    //////////// UPDATE REWARD /////////
+    export const updateWalletBTCReward = async (req: Request, res: Response) => {
+      try {
+  
+        // @ts-ignore
+        const prisma = req.prisma as PrismaClient;
+        const {walletBTC} = req?.body;
+      const newReward=  await prisma.rewards.create({
+            data: {
+                  walletBTC:walletBTC
+              }
+          })
+          
+          res.status(200).json(
+            { data: newReward}
+          );
+        } catch ( error ) {
+          console.log(error)
+        res.status(500).json({ error:error });
+      }
+    };
