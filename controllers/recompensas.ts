@@ -284,8 +284,9 @@ export const addReward = async (req: Request, res: Response) => {
   
         // @ts-ignore
         const prisma = req.prisma as PrismaClient;
-        const {walletBTC} = req?.body;
-      const newReward=  await prisma.rewards.create({
+        const {walletBTC,rewardID} = req?.body;
+      const newReward=  await prisma.rewards.update({
+        where:{rewardID:Number(rewardID)},
             data: {
                   walletBTC:walletBTC
               }

@@ -1,7 +1,6 @@
 import express from "express";
 import { addReward, claimReward, getAllRewards, getOneReward, getRewardsByCollection, updateWalletBTCReward } from "../controllers/recompensas";
 import { authenticateToken } from "../middleware/auth";
-import { kycPassed } from "../middleware/kyc";
 import { isAdmin } from "../middleware/isAdmin";
 
 const router = express.Router();
