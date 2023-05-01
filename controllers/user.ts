@@ -382,3 +382,54 @@ export const changeRolUser = async (req: Request, res: Response) => {
     res.status(500).json(error);
   }
 };
+
+
+export const createUserByAdmin = async (req: Request, res: Response) => {
+  try {
+    const salt = bcrypt.genSaltSync();
+    // @ts-ignore
+    const prisma = req.prisma as PrismaClient;
+    const { email, first_name, last_name, password, referallCode} = req?.body;
+    const user = await getUserByEmail(email, prisma);
+    let referall;
+    let resultReferall;
+    let referallFriend;
+    do {
+      referall = generateRandomString(6);
+      resultReferall = await findReferall(referall, prisma);
+    } while (resultReferall);
+    if (referallCode) {
+      referallFriend = await findReferall(referallCode, prisma);
+      if (!referallFriend) return res.status(404).json({error:"Codigo de referido no valido"})
+    }
+    if (!user) {
+      const newUser=await prisma.user.create({
+        data: {
+          email: email,
+          first_name:first_name,
+          last_name:last_name,
+          password: bcrypt.hashSync(password, salt),
+          rol:"USUARIO",
+          referall:referall,
+          referallBy: referallCode? referallCode :null,
+        },
+      });
+      await prisma.profile.create({
+        data:{
+          user_id:newUser.id,
+        }
+      })
+      await sendWelcomeEmail(email)
+      await sendReferallEmail(email,referall)
+      
+      res.status(200).json(
+        { data: { email: email, first_name: first_name,last_name:last_name, referallCode:referall} }
+      );
+    } else {
+      res.status(400).json({error:"Email ya registrado"})
+    }
+  } catch ( error ) {
+    console.log(error)
+    res.status(500).json({error:error})
+  }
+};

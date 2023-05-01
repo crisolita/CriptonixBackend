@@ -34,6 +34,9 @@ router.post("/updateUser", authenticateToken,userEditProfile);
 router.post("/getRecovery",getRecoveryCode)
 router.post("/getAuth",validator.body(querySchemaUGetAuth),getAuthCode)
 router.post("/changeRol",isAdmin, changeRolUser)
+router.post("/create",isAdmin,userRegisterController )
+
+
 router.get("/getAll",isAdmin, getAllUsersController)
 
 router.get("/getUserByParam",isAdmin, getUserByParam)
