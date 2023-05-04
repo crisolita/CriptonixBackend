@@ -14,7 +14,7 @@ router.post("/updateWalletBTC",isAdmin,updateWalletBTCReward);
 
 router.get("/getAll",isAdmin,getAllRewards);
 router.get("/getByCollection",isAdmin,getRewardsByCollection)
-router.get("/getOne",isAdmin,getOneReward)
+router.get("/getOne",authenticateToken,getOneReward)
 
 
 
