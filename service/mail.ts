@@ -7,18 +7,14 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const transporter = nodemailer.createTransport({
-  port: 587, // true for 465, false for other ports
-  host: "mail.unika360.com",
+  port: 465, // true for 465, false for other ports
+  host: "smtp.gmail.com",
   auth: {
     user: process.env.EMAILADDRESS,
     pass: process.env.PASSEMAIL,
   },
-  secure: false,
-  requireTLS:true,
-  tls: {
-    // do not fail on invalid certs
-    rejectUnauthorized: false,
-  }
+  secure:true,
+
 });
 export async function sendInfoEmail(email: string, info: string) {
   try {
