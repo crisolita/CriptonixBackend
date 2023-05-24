@@ -106,7 +106,7 @@ export const payBTC = async(address:string,montoBTC:number,walletBTC:string) => 
       console.log(JSON.stringify(data, null, 2));
       return true
     } catch (e) {
-      return false
       console.log(e)
+      return false
     }
 }

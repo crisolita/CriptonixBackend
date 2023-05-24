@@ -27,7 +27,7 @@ export const addReward = async (req: Request, res: Response) => {
     feeColl=Number(reward[0].FEECOLECCION.replace("%","").replace(",",".")),
     feeEnergy=Number(reward[0].FEEENERGIA.replace("%","").replace(",",".")),
     totalFees=(feeColl+feeEnergy+feePool)/100
-    const newReward=  await prisma.rewards.create({
+    let newReward=  await prisma.rewards.create({
           data: {
                 collectionID:reward[0].IDCOLECCION,
                 creationDate:creationDate,
@@ -44,6 +44,7 @@ export const addReward = async (req: Request, res: Response) => {
         })
         const list=await getUserByCollection(reward[0].IDCOLECCION,prisma)
         const numberOfNft= await contract.getNFTByColleccion(newReward.collectionID);
+        console.log(newReward)
         for(let x of list) {
           const bill=await prisma.deudas.create({
             data:{
@@ -61,7 +62,7 @@ export const addReward = async (req: Request, res: Response) => {
               tipo:"Liquidacion disponible",
               titulo:"Liquidacion semanal",
               fecha:new Date().toDateString(),
-              data:`${newReward.id}`,
+              data:`${newReward.rewardID}`,
               descripcion:`Tienes disponible ${newReward.totalRecompensa/numberOfNft.length} BTC`,
               user_id:x.id
             }
@@ -160,7 +161,7 @@ export const addReward = async (req: Request, res: Response) => {
             user_id:user.id,
             fecha:new Date(),
             cantidad:theReward.dates.length,
-            coste_unitario:coleccion.energyCost,
+            coste_unitario:Number(ethers.utils.formatEther(coleccion.energyCost.toString())),
             descripcion:`Pago de ${Number(ethers.utils.formatEther(coleccion.energyCost.toString()))*theReward.dates.length}$ por gasto de energia de recompensa en BTC ${theReward.amountReward}, a traves de metamask`,
             first_name:usuario?.first_name,
             last_name:usuario?.last_name,
@@ -197,7 +198,7 @@ export const addReward = async (req: Request, res: Response) => {
             user_id:user.id,
             fecha:new Date(),
             cantidad:theReward.dates.length,
-            coste_unitario:coleccion.energyCost,
+            coste_unitario:Number(ethers.utils.formatEther(coleccion.energyCost.toString())),
             descripcion:`Pago de ${Number(ethers.utils.formatEther(coleccion.energyCost.toString()))*theReward.dates.length}$ por gasto de energia de recompensa en BTC ${theReward.amountReward}, a traves de tarjeta`,
             first_name:usuario?.first_name,
             last_name:usuario?.last_name,
@@ -233,6 +234,7 @@ export const addReward = async (req: Request, res: Response) => {
           const newAmount= bill.amountReward-feeBTC;
           ///pagar
           const payBtc=await payBTC(wallet_BTC,newAmount,theReward.walletBTC)
+          console.log(payBtc)
           if(!payBtc) return res.status(500).json({error: "The btc payment failed"})
         //  / cambiar la bd 
             await prisma.deudas.update({
@@ -248,7 +250,7 @@ export const addReward = async (req: Request, res: Response) => {
             user_id:user.id,
             fecha:new Date(),
             cantidad:theReward.dates.length,
-            coste_unitario:coleccion.energyCost,
+            coste_unitario:Number(ethers.utils.formatEther(coleccion.energyCost.toString())),
             descripcion:`Pago de ${Number(ethers.utils.formatEther(coleccion.energyCost.toString()))*theReward.dates.length} deducido de la recompensa en BTC por gasto de energia de recompensa en BTC ${theReward.amountReward}`,
             first_name:usuario?.first_name,
             last_name:usuario?.last_name,
