@@ -61,7 +61,7 @@ export const addReward = async (req: Request, res: Response) => {
               tipo:"Liquidacion disponible",
               titulo:"Liquidacion semanal",
               fecha:new Date().toDateString(),
-              data:`${bill.id}`,
+              data:`${newReward.id}`,
               descripcion:`Tienes disponible ${newReward.totalRecompensa/numberOfNft.length} BTC`,
               user_id:x.id
             }

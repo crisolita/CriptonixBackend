@@ -53,7 +53,7 @@ export const CONTRACT_ADDRESS =
       type: "function",
     },
   ];
-  export const addr = "0xF4030086522a5bEEa4988F8cA5B36dbC97BeE88c";
+  export const addr = "0x007A22900a3B98143368Bd5906f8E17e9867581b";
   const provider = new ethers.providers.JsonRpcProvider(
     "https://rpc-mumbai.maticvigil.com	"
     );
