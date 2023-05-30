@@ -30,6 +30,20 @@ export async function sendInfoEmail(email: string, info: string) {
   console.log(e)
 }
 }
+export async function sendRequestSupportEmail(email: string, nombre:string,asunto:string,consulta:string) {
+  try {
+
+  const mailData = {
+    from: process.env.EMAILADDRESS, // sender address
+    to: "customer@nf-tonix.com", // list of receivers
+    subject:asunto,
+    html: `<h2 style="color:#23262F;">Consulta a soporte.</h2><h3 style="color:#6E7786;">Consulta de parte de ${nombre} con el email ${email} quien tiene la siguiente consulta: ${consulta}</h3>`,
+  };
+  return   transporter.sendMail(mailData); 
+} catch (e) {
+  console.log(e)
+}
+}
 export async function sendActiveEmail(email: string) {
   try {
 

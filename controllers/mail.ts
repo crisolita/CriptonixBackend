@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { sendInfoEmail, sendNewColeccionEmail } from "../service/mail";
+import { sendInfoEmail, sendNewColeccionEmail, sendRequestSupportEmail } from "../service/mail";
 import { getAllUsers } from "../service/user";
 
 ////// SEND EMAIL INFORMATIVO  /////
@@ -16,6 +16,16 @@ export const sendInfo = async (req: Request, res: Response) => {
     catch (error) {
         res.status(500).json({error:error})
     }}
+    export const requestSupport = async (req: Request, res: Response) => {
+      try {
+       const { nombre, email,asunto, consulta } = req?.body;
+          await sendRequestSupportEmail(email,nombre,asunto,consulta)
+          await sendInfoEmail(email,"Se ha enviado tu consulta a soporte de NFTONIX")
+          res.status(200).json({data:"ok"})
+      }
+      catch (error) {
+          res.status(500).json({error:error})
+      }}
       /// notificar acerca de las nuevas colecciones
       export const notifyNewCollecions = async (req: Request, res: Response) => {
         try {

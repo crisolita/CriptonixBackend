@@ -68,13 +68,63 @@ export const updateUserWalletETHAddress = async (id:string,wallet_ETH:string,pri
     }
   )
 }
-export const updateUserProfile = async (id:number,data:{},prisma:PrismaClient)=> {
-  return await prisma.profile.update(
-    {
-      where: {user_id:id}, 
-      data: {
-        ...data
-      }
-    }
-  )
+export const updateUserProfile = async (id:number,param:string,body:string,prisma:PrismaClient)=> {
+  switch(param) {
+    case ("wallet_BTC"):
+      return await prisma.profile.update(
+        {
+          where: {user_id:id}, 
+          data: {
+          wallet_BTC:body
+          }
+        }
+      )
+    case ("wallet_Kadena"):
+      return await prisma.profile.update(
+        {
+          where: {user_id:id}, 
+          data: {
+          wallet_Kadena:body
+          }
+        }
+      )
+    case ("wallet_LTC"):
+      return await prisma.profile.update(
+        {
+          where: {user_id:id}, 
+          data: {
+          wallet_LTC:body
+          }
+        }
+      )
+    case ("wallet_Zcash"):
+      return await prisma.profile.update(
+        {
+          where: {user_id:id}, 
+          data: {
+          wallet_Zcash:body
+          }
+        }
+      )
+    case ("empresa"):
+      return await prisma.profile.update(
+        {
+          where: {user_id:id}, 
+          data: {
+          empresa:body
+          }
+        }
+      )
+    case ("telefono"):
+      return await prisma.profile.update(
+        {
+          where: {user_id:id}, 
+          data: {
+          telefono:body
+          }
+        }
+      )
+
+  }
+
 }

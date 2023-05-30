@@ -301,19 +301,18 @@ export const userEditProfile = async (req: Request, res: Response) => {
         const user = req.user as User;
     // @ts-ignore
     const prisma = req.prisma as PrismaClient;
-    const { wallet_BTC,
-      wallet_LTC,
-      wallet_Kadena,
-      wallet_Zcash,
-      empresa,
-      telefono,
+    const {param,body,
     first_name,
   last_name} = req?.body;
-      await updateUserProfile(user.id,req.body,prisma)
-      if(wallet_BTC||wallet_Kadena||wallet_LTC||wallet_Zcash) await sendChangeWalletEmail(user.email)
-      if(first_name && last_name) await updateUser(user.id,{first_name,last_name},prisma)
-      return res.status(200).json({data:req.body});
-
+      switch (param)  {
+        case ("wallet_BTC"||"wallet_Kadena"||"wallet_LTC"||"wallet_Zcash"):
+        await sendChangeWalletEmail(user.email)
+        break;
+        case (first_name && last_name):
+          await updateUser(user.id,{first_name,last_name},prisma)
+      }
+      await updateUserProfile(user.id,param,body,prisma)
+res.status(200).json({data:{param,body,user,first_name,last_name}})
   } catch(error) {
     console.log(error)
     return res.status(500).json({ error: error });
