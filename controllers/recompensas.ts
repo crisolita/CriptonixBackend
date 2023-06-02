@@ -189,7 +189,8 @@ export const addReward = async (req: Request, res: Response) => {
         res.status(200).json({data:{amount:bill.amountReward,wallet:wallet_BTC}})
 
       } else if (payMethod==="STRIPE") {
-        await payFeeWithStripe(user.id,Number(rewardID),prisma)
+        const stripe=await payFeeWithStripe(user.id,Number(rewardID),prisma)
+        if(!stripe) return res.json({error:"Pago con tarjeta ha fallado"})
         ///pagar con BTC as well
         const payBtc=await payBTC(wallet_BTC,bill.amountReward,theReward.walletBTC)
         const usuario= await getUserByEmail(user.email,prisma)

@@ -229,10 +229,12 @@ export const userLoginController = async (req: Request, res: Response) => {
     const prisma = req.prisma as PrismaClient;
     const { email, authCode } = req?.body;
     const user = await getUserByEmail(email, prisma);
+    // const profile= await getProfileByUser(,prisma)
     if (user ) {
+      const profile=await getProfileByUser(user.id,prisma)
       if (bcrypt.compareSync(authCode,user.authToken? user.authToken :""))
         return res.status(200).json(
-       { data: {email:user.email,userid:user.id,first_name:user.first_name,last_name:user.last_name,rol:user.rol,wallet_ETH:user.wallet_ETH,  token: createJWT(user),stripeId:user.stripe_id,} }
+       { data: {email:user.email,userid:user.id,first_name:user.first_name,last_name:user.last_name,rol:user.rol,wallet_ETH:user.wallet_ETH,  token: createJWT(user),wallet_BTC:profile?.wallet_BTC} }
         );
       else
         return res.status(403).json({ error: "Token 2fa incorrecto." });

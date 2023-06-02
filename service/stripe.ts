@@ -21,20 +21,14 @@ export const chargeStripe = async (user_id: number,amount:number, prisma: Prisma
         customer:user.stripe_id,
         receipt_email:user.email
       })
-      return charge
+      return true
     } else {
-      throw new Error("Usuario no registrado");
+      return false;
+    
     } 
   } catch (e) {
-    await prisma.notificaciones.create({
-      data:{
-        tipo:"Pago rechazado",
-        titulo:"Pago no exitoso",
-        fecha:new Date().toDateString(),
-        descripcion:`Pago rechazado por la cantidad de ${amount}`,
-        user_id:user_id
-      }
-    })
+    console.log(e)
+    return false
   }
     
  

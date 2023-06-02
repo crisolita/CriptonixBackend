@@ -17,8 +17,20 @@ export const buyNftByStripe = async (req: Request, res: Response) => {
       const { amount, collectionID} = req?.body;
       const name= await contract.collections(collectionID)
       const usuario= await getUserByEmail(user.email,prisma)
-      const stripe=await chargeStripe(user.id,Number(ethers.utils.formatEther(name.price.toString()))*amount*100,prisma);
-      console.log(stripe)
+      const stripe=await chargeStripe(user.id,Number(ethers.utils.formatEther(name.price.toString()))*amount*100,prisma); 
+      console.log(stripe,"--stripe--")
+      if(!stripe) {
+        await prisma.notificaciones.create({
+          data:{
+            tipo:"Pago rechazado",
+            titulo:"Pago no exitoso",
+            fecha:new Date().toDateString(),
+            descripcion:`Pago rechazado por la cantidad de ${amount}`,
+            user_id:user.id
+          }
+        })
+        return res.status(400).json({error:"Pago con tarjeta ha fallado"})
+      }
       const wallet= (await getUserById(user.id,prisma))?.wallet_ETH
       if(!wallet) return res.status(404).json({error:"Not wallet ETH found!"})
       const tx= await contract.connect(walletAdmin).addExternalBuy(wallet,ethers.utils.parseEther(amount.toString()),collectionID,{gasLimit:300000})
