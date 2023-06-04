@@ -33,7 +33,8 @@ export const buyNftByStripe = async (req: Request, res: Response) => {
       }
       const wallet= (await getUserById(user.id,prisma))?.wallet_ETH
       if(!wallet) return res.status(404).json({error:"Not wallet ETH found!"})
-      const tx= await contract.connect(walletAdmin).addExternalBuy(wallet,ethers.utils.parseEther(amount.toString()),collectionID,{gasLimit:300000})
+      const tx= await contract.connect(walletAdmin).addExternalBuy(wallet,ethers.utils.parseEther(amount.toString()),collectionID,{gasLimit:20000000})
+      console.log(tx)
       await prisma.facturas.create({
         data:{
           user_id:user.id,
@@ -57,6 +58,40 @@ export const buyNftByStripe = async (req: Request, res: Response) => {
           user_id:user.id
         }
       })
+      res.status(200).json(
+      { data: tx}
+      );
+    }
+  catch (error) {
+    console.log(error)
+    res.status(500).json({error: error });
+  }}
+  export const crearColeccion = async (req: Request, res: Response) => {
+    try {
+      const price = ethers.utils.parseEther("2");
+      const description = "Este es la mejor collecion ever";
+      const privacy = true;
+      const TH = 900;
+      const madurityTime = 0;
+      const energyCost = ethers.utils.parseEther("1");
+      const desactiveCost = ethers.utils.parseEther("1");
+      const tokenLife = 60*60*300*24;
+      const amount = ethers.utils.parseEther("10");
+      const amountToStartMaduration = ethers.utils.parseEther("1");
+      const _ipfsHash = "1";
+      const tx= await contract.connect(walletAdmin).createCollection(price,
+        description,
+        privacy,
+        TH,
+        madurityTime,
+        energyCost,  desactiveCost,
+        tokenLife,
+        amount,
+        amountToStartMaduration,
+        _ipfsHash,{gasLimit:20000000})
+      console.log(tx)
+
+    
       res.status(200).json(
       { data: tx}
       );
